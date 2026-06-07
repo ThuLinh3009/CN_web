@@ -3,6 +3,18 @@ const supplierService = require('../../services/supplier.service');
 const bookService = require('../../services/book.service');
 const importLotService = require('../../services/importLot.service');
 
+// Parse lot_id[], quantity[], unit_price[] từ form thành array items
+function parseItems(body) {
+  const lotIds = [].concat(body['lot_id'] || []);
+  const quantities = [].concat(body['quantity'] || []);
+  const unitPrices = [].concat(body['unit_price'] || []);
+  return lotIds.map((lotId, i) => ({
+    lot_id: lotId,
+    quantity: quantities[i],
+    unit_price: unitPrices[i],
+  }));
+}
+
 module.exports = {
   async list(req, res, next) {
     try {
@@ -24,11 +36,10 @@ module.exports = {
 
   async create(req, res, next) {
     try {
-      const { supplier_id, items } = req.body;
+      const { supplier_id, note } = req.body;
       const employee_id = req.session.user?.id;
-      // items is array or single object from form
-      let itemArr = Array.isArray(items) ? items : (items ? [items] : []);
-      await importReceiptService.createImportReceipt({ employee_id, supplier_id, items: itemArr });
+      const itemArr = parseItems(req.body);
+      await importReceiptService.createImportReceipt({ employee_id, supplier_id, note, items: itemArr });
       req.flash('success', 'Tạo phiếu nhập thành công');
       return res.redirect('/admin/import-receipts');
     } catch (error) { return next(error); }
@@ -61,8 +72,8 @@ module.exports = {
   async update(req, res, next) {
     try {
       const { id } = req.params;
-      const { supplier_id, note, items } = req.body;
-      let itemArr = Array.isArray(items) ? items : (items ? [items] : []);
+      const { supplier_id, note } = req.body;
+      const itemArr = parseItems(req.body);
       await importReceiptService.updateImportReceipt(id, { supplier_id, note, items: itemArr });
       req.flash('success', 'Cập nhật phiếu nhập thành công');
       return res.redirect('/admin/import-receipts/' + id);
