@@ -4,6 +4,9 @@
   <div>
     <a href="/admin/import-receipts" class="btn btn-secondary">&larr; Quay lại</a>
     <a href="/admin/import-receipts/print/<%= receipt && receipt.id %>" class="btn btn-info" style="margin-left:8px;">In phiếu</a>
+    <% if (receipt && receipt.status !== 'confirmed') { %>
+      <a href="/admin/import-receipts/edit/<%= receipt.id %>" class="btn btn-warning" style="margin-left:8px;">Sửa phiếu</a>
+    <% } %>
     <% if (typeof receipt !== 'undefined' && receipt && receipt.status !== 'confirmed') { %>
       <form method="POST" action="/admin/import-receipts/confirm/<%= receipt.id %>" style="display:inline;margin-left:8px;" onsubmit="return confirm('Xác nhận phiếu nhập này?')">
         <button type="submit" class="btn btn-success">Xác nhận nhập</button>

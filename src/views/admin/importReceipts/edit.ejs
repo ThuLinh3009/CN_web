@@ -1,0 +1,62 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header">
+  <h3>Sửa phiếu nhập #<%= receipt.id %></h3>
+  <a href="/admin/import-receipts/<%= receipt.id %>" class="btn btn-secondary">&larr; Quay lại</a>
+</div>
+<div class="card">
+  <%- include('../../partials/flash-message') %>
+  <form method="POST" action="/admin/import-receipts/edit/<%= receipt.id %>" id="importForm">
+    <div class="form-group" style="max-width:400px;">
+      <label>Nhà cung cấp</label>
+      <select name="supplier_id" required>
+        <option value="">-- Chọn NCC --</option>
+        <% suppliers.forEach(function(s){ %>
+          <option value="<%= s.id %>" <%= s.id == receipt.supplier_id ? 'selected' : '' %>><%= s.name %></option>
+        <% }); %>
+      </select>
+    </div>
+    <div class="form-group" style="max-width:400px;">
+      <label>Ghi chú</label>
+      <textarea name="note" rows="2"><%= receipt.note||'' %></textarea>
+    </div>
+
+    <h4 style="margin:16px 0 8px;">Danh sách sách nhập</h4>
+    <div id="items">
+      <% receipt.items.forEach(function(item){ %>
+        <div class="import-item" style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+          <select name="lot_id[]" style="flex:2;" required>
+            <option value="">-- Chọn lô --</option>
+            <% lots.forEach(function(l){ %>
+              <option value="<%= l.id %>" <%= l.id == item.lot_id ? 'selected' : '' %>><%= l.book_title %> (Lô #<%= l.id %>, tồn: <%= l.quantity %>)</option>
+            <% }); %>
+          </select>
+          <input type="number" name="quantity[]" min="1" value="<%= item.quantity %>" placeholder="Số lượng" style="flex:1;" required />
+          <input type="number" name="unit_price[]" min="0" step="1000" value="<%= item.unit_price %>" placeholder="Đơn giá" style="flex:1;" required />
+          <button type="button" onclick="removeItem(this)" class="btn btn-danger">X</button>
+        </div>
+      <% }); %>
+    </div>
+
+    <button type="button" onclick="addItem()" class="btn btn-secondary" style="margin-bottom:16px;">+ Thêm sách</button>
+    <div style="margin-top:12px;">
+      <button type="submit" class="btn btn-success" style="padding:8px 20px;">Lưu thay đổi</button>
+      <a href="/admin/import-receipts/<%= receipt.id %>" class="btn btn-secondary" style="padding:8px 20px;margin-left:8px;">Hủy</a>
+    </div>
+  </form>
+</div>
+
+<script>
+var lotsOptions = `<% lots.forEach(function(l){ %><option value="<%= l.id %>"><%= l.book_title %> (Lô #<%= l.id %>)</option><% }); %>`;
+function addItem() {
+  var div = document.createElement('div');
+  div.className = 'import-item';
+  div.style = 'display:flex;gap:8px;margin-bottom:8px;align-items:center;';
+  div.innerHTML = '<select name="lot_id[]" style="flex:2;" required><option value="">-- Chọn lô --</option>' + lotsOptions + '</select><input type="number" name="quantity[]" min="1" placeholder="Số lượng" style="flex:1;" required /><input type="number" name="unit_price[]" min="0" step="1000" placeholder="Đơn giá" style="flex:1;" required /><button type="button" onclick="removeItem(this)" class="btn btn-danger">X</button>';
+  document.getElementById('items').appendChild(div);
+}
+function removeItem(btn) {
+  var items = document.querySelectorAll('.import-item');
+  if (items.length > 1) btn.parentElement.remove();
+}
+</script>
+<%- include('../../layouts/admin_bottom') %>

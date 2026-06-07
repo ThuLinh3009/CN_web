@@ -42,12 +42,34 @@ module.exports = {
     } catch (error) { return next(error); }
   },
 
+  async showEdit(req, res, next) {
+    try {
+      const receipt = await importReceiptService.getImportReceiptById(req.params.id);
+      if (!receipt) return res.redirect('/admin/import-receipts');
+      if (receipt.status === 'confirmed') {
+        req.flash('error', 'Không thể sửa phiếu nhập đã xác nhận');
+        return res.redirect('/admin/import-receipts/' + req.params.id);
+      }
+      const [suppliers, lots] = await Promise.all([
+        supplierService.getAllSuppliers(),
+        importLotService.getAllLots(),
+      ]);
+      return res.render('admin/importReceipts/edit', { title: 'Sửa phiếu nhập', receipt, suppliers, lots });
+    } catch (error) { return next(error); }
+  },
+
   async update(req, res, next) {
     try {
-      // Phiếu nhập đã tạo không cho phép chỉnh sửa — toàn vẹn tồn kho
-      req.flash('error', 'Phiếu nhập đã tạo không thể chỉnh sửa');
-      return res.redirect('/admin/import-receipts');
-    } catch (error) { return next(error); }
+      const { id } = req.params;
+      const { supplier_id, note, items } = req.body;
+      let itemArr = Array.isArray(items) ? items : (items ? [items] : []);
+      await importReceiptService.updateImportReceipt(id, { supplier_id, note, items: itemArr });
+      req.flash('success', 'Cập nhật phiếu nhập thành công');
+      return res.redirect('/admin/import-receipts/' + id);
+    } catch (error) {
+      req.flash('error', error.message);
+      return res.redirect('/admin/import-receipts/' + req.params.id);
+    }
   },
 
   async print(req, res, next) {

@@ -67,6 +67,37 @@ async function createImportReceipt(data) {
   });
 }
 
+async function updateImportReceipt(id, data) {
+  return withTransaction(async (conn) => {
+    const q = queryConn(conn);
+
+    const receipts = await q('SELECT * FROM import_receipts WHERE id = ? LIMIT 1', [id]);
+    const receipt = receipts[0];
+    if (!receipt) throw new Error('Phiếu nhập không tồn tại');
+    if (receipt.status === 'confirmed') throw new Error('Không thể sửa phiếu nhập đã xác nhận');
+
+    const { supplier_id, note = null, items = [] } = data;
+    if (!supplier_id) throw new Error('Vui lòng chọn nhà cung cấp');
+    if (items.length === 0) throw new Error('Phiếu nhập phải có ít nhất 1 sản phẩm');
+
+    await q('UPDATE import_receipts SET supplier_id=?, note=? WHERE id=?', [supplier_id, note, id]);
+
+    // Xóa items cũ rồi insert lại
+    await q('DELETE FROM import_receipt_items WHERE receipt_id=?', [id]);
+    for (const item of items) {
+      const qty = Number(item.quantity);
+      const price = Number(item.unit_price);
+      if (!qty || qty <= 0) throw new Error('Số lượng nhập phải lớn hơn 0');
+      if (price <= 0) throw new Error('Đơn giá phải lớn hơn 0');
+      const lots = await q('SELECT book_id FROM import_lots WHERE id = ? LIMIT 1', [item.lot_id]);
+      if (!lots[0]) throw new Error(`Lô hàng #${item.lot_id} không tồn tại`);
+      await q('INSERT INTO import_receipt_items (receipt_id, lot_id, quantity, unit_price) VALUES (?,?,?,?)',
+        [id, item.lot_id, qty, price]);
+    }
+    return { ok: true };
+  });
+}
+
 async function confirmImportReceipt(id) {
   // Xác nhận phiếu nhập: cộng tồn kho và chuyển status → 'confirmed'
   return withTransaction(async (conn) => {
@@ -95,4 +126,4 @@ async function confirmImportReceipt(id) {
   });
 }
 
-module.exports = { getAllImportReceipts, getImportReceiptById, createImportReceipt, confirmImportReceipt };
+module.exports = { getAllImportReceipts, getImportReceiptById, createImportReceipt, updateImportReceipt, confirmImportReceipt };
