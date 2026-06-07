@@ -2,7 +2,8 @@ const { query, withTransaction, queryConn } = require('../config/db');
 
 async function getAllImportReceipts() {
   return query(`
-    SELECT ir.*, e.full_name AS employee_name, s.name AS supplier_name
+    SELECT ir.*, e.full_name AS employee_name, s.name AS supplier_name,
+      COALESCE((SELECT SUM(iri.quantity * iri.unit_price) FROM import_receipt_items iri WHERE iri.receipt_id = ir.id), 0) AS total_amount
     FROM import_receipts ir
     LEFT JOIN employees e ON e.id = ir.employee_id
     LEFT JOIN suppliers s ON s.id = ir.supplier_id
