@@ -20,9 +20,9 @@
             <td><%= r.created_at ? new Date(r.created_at).toLocaleDateString('vi-VN') : '' %></td>
             <td>
               <a href="/admin/import-receipts/<%= r.id %>" class="btn btn-info">Chi tiết</a>
-              <a href="/admin/import-receipts/<%= r.id %>/print" class="btn btn-secondary">In</a>
+              <a href="/admin/import-receipts/print/<%= r.id %>" class="btn btn-secondary">In</a>
               <% if(r.status!=='confirmed'){ %>
-                <form method="POST" action="/admin/import-receipts/<%= r.id %>/confirm" style="display:inline" onsubmit="return confirm('Xác nhận phiếu nhập này?')"><button type="submit" class="btn btn-success">Xác nhận</button></form>
+                <form method="POST" action="/admin/import-receipts/confirm/<%= r.id %>" style="display:inline" onsubmit="return confirm('Xác nhận phiếu nhập này?')"><button type="submit" class="btn btn-success">Xác nhận</button></form>
               <% } %>
             </td>
           </tr>
