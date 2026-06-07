@@ -1,0 +1,76 @@
+<%- include('../layouts/main_top', {title: title}) %>
+
+<div id="product-section">
+  <div class="sidebar">
+    <h4>DANH MỤC</h4>
+    <ul>
+      <% if (typeof categories !== 'undefined' && categories && categories.length) { %>
+        <% categories.forEach(function(cat){ %>
+          <li><a href="/books?category_id=<%= cat.id %>"><%= cat.name %></a></li>
+        <% }); %>
+      <% } %>
+    </ul>
+  </div>
+
+  <div id="container">
+    <div class="slideshow">
+      <img class="slide" src="/images/slideb0.png" alt="slide" />
+      <img class="slide" src="/images/slideb1.png" alt="slide" />
+      <img class="slide" src="/images/slideb2.png" alt="slide" />
+      <img class="slide" src="/images/slideb3.png" alt="slide" />
+    </div>
+
+    <div id="content">
+      <div class="cate">
+        <div class="tab-menu">
+          <span class="tab active" onclick="showTab('new')">Sách Mới Nổi Bật</span>
+          <span class="tab" onclick="showTab('sale')">Sách Mới Nhất</span>
+        </div>
+
+        <div class="list-product">
+          <div class="tab-content active" id="tab-new">
+            <% if (typeof featuredBooks !== 'undefined' && featuredBooks && featuredBooks.length) { %>
+              <% featuredBooks.forEach(function(book){ %>
+                <div class="item">
+                  <div class="product">
+                    <img class="photo" src="/images/<%= book.thumbnail || 'default-book.jpg' %>" alt="<%= book.title %>" onerror="this.src='/images/default-book.jpg'" />
+                    <a class="name" href="/books/<%= book.id %>"><%= book.title %></a>
+                    <div class="action-icons">
+                      <button class="view-detail" onclick="location.href='/books/<%= book.id %>'"><img src="/images/eye.png" alt="View" width="20" /></button>
+                    </div>
+                    <div class="price-box">
+                      <span class="price"><%= book.price ? Number(book.price).toLocaleString('vi-VN') + 'đ' : 'Liên hệ' %></span>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            <% } else { %>
+              <p style="padding:20px;">Chưa có sách nào.</p>
+            <% } %>
+          </div>
+
+          <div class="tab-content" id="tab-sale" style="display:none">
+            <% if (typeof newestBooks !== 'undefined' && newestBooks && newestBooks.length) { %>
+              <% newestBooks.forEach(function(book){ %>
+                <div class="item">
+                  <div class="product">
+                    <img class="photo" src="/images/<%= book.thumbnail || 'default-book.jpg' %>" alt="<%= book.title %>" onerror="this.src='/images/default-book.jpg'" />
+                    <a class="name" href="/books/<%= book.id %>"><%= book.title %></a>
+                    <div class="action-icons">
+                      <button class="view-detail" onclick="location.href='/books/<%= book.id %>'"><img src="/images/eye.png" alt="View" width="20" /></button>
+                    </div>
+                    <div class="price-box">
+                      <span class="price"><%= book.price ? Number(book.price).toLocaleString('vi-VN') + 'đ' : 'Liên hệ' %></span>
+                    </div>
+                  </div>
+                </div>
+              <% }); %>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/main_bottom') %>

@@ -1,0 +1,23 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header"><h3>Quản lý thuộc tính sách</h3><a href="/admin/book-attributes/create" class="btn btn-success">+ Thêm thuộc tính</a></div>
+<div class="card" style="overflow-x:auto;">
+  <table>
+    <thead><tr><th>ID</th><th>Tên thuộc tính</th><th>Mô tả</th><th>Thao tác</th></tr></thead>
+    <tbody>
+      <% if (typeof attributes !== 'undefined' && attributes && attributes.length) { %>
+        <% attributes.forEach(function(attr){ %>
+          <tr>
+            <td><%= attr.id %></td>
+            <td><strong><%= attr.name %></strong></td>
+            <td><%= attr.description||'' %></td>
+            <td>
+              <a href="/admin/book-attributes/<%= attr.id %>/edit" class="btn btn-warning">Sửa</a>
+              <form method="POST" action="/admin/book-attributes/<%= attr.id %>/delete" style="display:inline" onsubmit="return confirm('Xác nhận xóa thuộc tính này?')"><button type="submit" class="btn btn-danger">Xóa</button></form>
+            </td>
+          </tr>
+        <% }); %>
+      <% } else { %><tr><td colspan="4" style="text-align:center;padding:20px;">Chưa có thuộc tính</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../layouts/admin_bottom') %>

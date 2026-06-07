@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Hóa đơn bán hàng</title>
+  <style>
+    body { font-family: Arial, sans-serif; font-size: 14px; color: #000; padding: 20px; }
+    h2, h3 { text-align: center; margin: 0; }
+    .info-row { display: flex; gap: 40px; margin: 10px 0; }
+    .info-row span { flex: 1; }
+    table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+    th, td { border: 1px solid #333; padding: 6px 10px; }
+    th { background: #eee; }
+    .total-row { font-weight: bold; text-align: right; }
+    .signatures { display: flex; justify-content: space-between; margin-top: 40px; }
+    .signatures div { text-align: center; width: 180px; }
+    @media print { .no-print { display: none; } }
+  </style>
+</head>
+<body>
+<h2>NHÀ SÁCH XYZ</h2>
+<h3>HÓA ĐƠN BÁN HÀNG</h3>
+<% if (typeof invoice !== 'undefined' && invoice) { %>
+<div class="info-row" style="margin-top:16px;">
+  <span><strong>Mã HĐ:</strong> <%= invoice.invoice_code||invoice.id %></span>
+  <span><strong>Ngày:</strong> <%= invoice.created_at ? new Date(invoice.created_at).toLocaleDateString('vi-VN') : '' %></span>
+</div>
+<div class="info-row">
+  <span><strong>Khách hàng:</strong> <%= invoice.customer_name||'Khách lẻ' %></span>
+  <span><strong>Nhân viên:</strong> <%= invoice.employee_name||'' %></span>
+</div>
+<div class="info-row">
+  <span><strong>Hình thức TT:</strong> <%= invoice.payment_method==='transfer'?'Chuyển khoản':'Tiền mặt' %></span>
+  <span><strong>Trạng thái:</strong> <%= invoice.payment_status==='paid'?'Đã thanh toán':'Chưa thanh toán' %></span>
+</div>
+<% if(invoice.note){ %><p><strong>Ghi chú:</strong> <%= invoice.note %></p><% } %>
+<table>
+  <thead><tr><th>#</th><th>Tên sách</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
+  <tbody>
+    <% if (typeof items !== 'undefined' && items && items.length) { %>
+      <% var total = 0; %>
+      <% items.forEach(function(item, idx){ total += (item.quantity||0)*(item.unit_price||0); %>
+        <tr>
+          <td style="text-align:center;"><%= idx+1 %></td>
+          <td><%= item.book_title||'' %></td>
+          <td style="text-align:center;"><%= item.quantity %></td>
+          <td style="text-align:right;"><%= Number(item.unit_price||0).toLocaleString('vi-VN') %>đ</td>
+          <td style="text-align:right;"><%= Number((item.quantity||0)*(item.unit_price||0)).toLocaleString('vi-VN') %>đ</td>
+        </tr>
+      <% }); %>
+      <tr><td colspan="4" class="total-row">Tổng cộng:</td><td style="text-align:right;font-weight:bold;"><%= Number(total).toLocaleString('vi-VN') %>đ</td></tr>
+    <% } %>
+  </tbody>
+</table>
+<div class="signatures">
+  <div><p>Khách hàng</p><br/><br/><p><em>(Ký, ghi rõ họ tên)</em></p></div>
+  <div><p>Nhân viên bán</p><br/><br/><p><em>(Ký, ghi rõ họ tên)</em></p></div>
+  <div><p>Giám đốc</p><br/><br/><p><em>(Ký, ghi rõ họ tên)</em></p></div>
+</div>
+<% } %>
+<div class="no-print" style="margin-top:24px;text-align:center;">
+  <button onclick="window.print()" style="padding:8px 24px;background:#417505;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:14px;">In hóa đơn</button>
+  <a href="/admin/sales-invoices" style="margin-left:12px;">Quay lại</a>
+</div>
+</body>
+</html>

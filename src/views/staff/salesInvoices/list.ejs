@@ -1,0 +1,31 @@
+<%- include('../../layouts/staff_top', {title: title}) %>
+<div class="page-header"><h3>Hóa đơn bán hàng</h3><a href="/staff/sales-invoices/create" class="btn btn-success">+ Tạo hóa đơn</a></div>
+<div class="card" style="overflow-x:auto;">
+  <table>
+    <thead><tr><th>Mã HĐ</th><th>Khách hàng</th><th>Tổng tiền</th><th>Trạng thái</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead>
+    <tbody>
+      <% if (typeof invoices !== 'undefined' && invoices && invoices.length) { %>
+        <% invoices.forEach(function(inv){ %>
+          <tr>
+            <td><strong><%= inv.invoice_code||inv.id %></strong></td>
+            <td><%= inv.customer_name||'Khách lẻ' %></td>
+            <td><%= inv.total_amount ? Number(inv.total_amount).toLocaleString('vi-VN') + 'đ' : '0đ' %></td>
+            <td>
+              <% if(inv.payment_status==='paid'){ %>
+                <span class="badge badge-success">Đã thanh toán</span>
+              <% } else { %>
+                <span class="badge badge-warning">Chưa thanh toán</span>
+              <% } %>
+            </td>
+            <td><%= inv.created_at ? new Date(inv.created_at).toLocaleDateString('vi-VN') : '' %></td>
+            <td>
+              <a href="/staff/sales-invoices/<%= inv.id %>" class="btn btn-info">Chi tiết</a>
+              <a href="/staff/sales-invoices/print/<%= inv.id %>" class="btn btn-secondary">In</a>
+            </td>
+          </tr>
+        <% }); %>
+      <% } else { %><tr><td colspan="6" style="text-align:center;padding:20px;">Chưa có hóa đơn</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../layouts/staff_bottom') %>

@@ -1,0 +1,89 @@
+<%- include('../../layouts/main_top', {title: title}) %>
+
+<div style="max-width:900px;margin:30px auto;padding:0 20px;display:flex;gap:30px;flex-wrap:wrap;">
+  <div style="flex:2;min-width:280px;">
+    <h2 style="color:#417505;border-bottom:2px solid #417505;padding-bottom:8px;">Thông tin giao hàng</h2>
+    <form method="POST" action="/checkout/submit" id="checkoutForm">
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-weight:bold;margin-bottom:4px;">Người nhận *</label>
+        <input type="text" name="recipient_name" required value="<%= typeof currentUser !== 'undefined' && currentUser ? currentUser.full_name : '' %>" style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;" />
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-weight:bold;margin-bottom:4px;">Số điện thoại *</label>
+        <input type="text" name="recipient_phone" required style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;" />
+      </div>
+
+      <div style="display:flex;gap:12px;flex-wrap:wrap;">
+        <div style="flex:1;min-width:220px;margin-bottom:12px;">
+          <label style="display:block;font-weight:bold;margin-bottom:4px;">Tỉnh / Thành phố *</label>
+          <select id="provinceSelect" name="province_code" required style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
+            <option value="">Đang tải danh sách tỉnh/thành...</option>
+          </select>
+          <input type="hidden" id="provinceName" name="province_name" />
+        </div>
+        <div style="flex:1;min-width:220px;margin-bottom:12px;">
+          <label style="display:block;font-weight:bold;margin-bottom:4px;">Xã / Phường / Đặc khu *</label>
+          <select id="wardSelect" name="ward_code" required disabled style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;">
+            <option value="">Chọn tỉnh/thành trước</option>
+          </select>
+          <input type="hidden" id="wardName" name="ward_name" />
+        </div>
+      </div>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-weight:bold;margin-bottom:4px;">Số nhà / Tên đường *</label>
+        <input
+          type="text"
+          id="streetAddress"
+          name="street_address"
+          required
+          placeholder="Ví dụ: 15 Nguyễn Văn A"
+          style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;"
+        />
+      </div>
+
+      <input type="hidden" id="shippingAddress" name="shipping_address" />
+      <p id="addressPreview" style="margin-top:-4px;margin-bottom:12px;color:#666;font-size:13px;line-height:1.4;">
+        Địa chỉ sẽ được ghép theo mô hình 2 cấp mới: Số nhà/đường, Xã/Phường, Tỉnh/Thành phố.
+      </p>
+      <p id="addressError" style="display:none;margin-top:-4px;margin-bottom:12px;color:#c0392b;font-size:13px;line-height:1.4;"></p>
+
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-weight:bold;margin-bottom:4px;">Ghi chú</label>
+        <textarea name="note" rows="3" style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;resize:vertical;"></textarea>
+      </div>
+      <div style="margin-bottom:12px;">
+        <label style="display:block;font-weight:bold;margin-bottom:4px;">Phương thức thanh toán</label>
+        <select name="payment_method" style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;">
+          <option value="COD">Thanh toán khi nhận hàng (COD)</option>
+          <option value="QR">Thanh toán QR Code</option>
+        </select>
+      </div>
+      <button type="submit" style="width:100%;padding:13px;background:#417505;color:#fff;border:none;border-radius:4px;font-size:16px;font-weight:bold;cursor:pointer;">
+        ĐẶT HÀNG NGAY
+      </button>
+    </form>
+  </div>
+
+  <div style="flex:1;min-width:250px;">
+    <h2 style="color:#417505;border-bottom:2px solid #417505;padding-bottom:8px;">Đơn hàng</h2>
+    <% if (typeof items !== 'undefined' && items && items.length) { %>
+      <% items.forEach(function(item){ %>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #eee;font-size:14px;">
+          <span style="flex:1;"><%= item.title %> x<%= item.quantity %></span>
+          <span style="font-weight:bold;color:red;"><%= (Number(item.unit_price)*Number(item.quantity)).toLocaleString('vi-VN') %>đ</span>
+        </div>
+      <% }); %>
+      <div style="padding:15px 0;font-size:18px;font-weight:bold;display:flex;justify-content:space-between;">
+        <span>Tổng:</span>
+        <span style="color:red;"><%= typeof total !== 'undefined' ? Number(total).toLocaleString('vi-VN') : 0 %>đ</span>
+      </div>
+    <% } else { %>
+      <p style="color:#666;">Giỏ hàng trống</p>
+    <% } %>
+  </div>
+</div>
+
+<script src="/js/vietnam-address.js"></script>
+
+<%- include('../../layouts/main_bottom') %>

@@ -1,0 +1,39 @@
+<%- include('../layouts/staff_top', {title: title}) %>
+<div class="page-header"><h3>Dashboard nhân viên</h3></div>
+
+<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
+  <div class="card" style="flex:1;min-width:180px;text-align:center;">
+    <div style="font-size:32px;font-weight:bold;color:#417505;"><%= typeof summary !== 'undefined' && summary ? summary.ordersToday||0 : 0 %></div>
+    <div style="color:#666;margin-top:4px;">Đơn đặt hôm nay</div>
+  </div>
+  <div class="card" style="flex:1;min-width:180px;text-align:center;">
+    <a href="/staff/orders?status=pending" style="text-decoration:none;color:inherit;">
+      <div style="font-size:32px;font-weight:bold;color:#e67e22;"><%= typeof summary !== 'undefined' && summary ? summary.pendingOrders||0 : 0 %></div>
+      <div style="color:#666;margin-top:4px;">Chờ xác nhận ↗</div>
+    </a>
+  </div>
+  <div class="card" style="flex:1;min-width:180px;text-align:center;">
+    <a href="/staff/orders?status=confirmed" style="text-decoration:none;color:inherit;">
+      <div style="font-size:32px;font-weight:bold;color:#2980b9;"><%= typeof summary !== 'undefined' && summary ? summary.deliveringOrders||0 : 0 %></div>
+      <div style="color:#666;margin-top:4px;">Đang giao hàng ↗</div>
+    </a>
+  </div>
+  <div class="card" style="flex:1;min-width:180px;text-align:center;">
+    <div style="font-size:32px;font-weight:bold;color:#8e44ad;"><%= typeof summary !== 'undefined' && summary ? Number(summary.revenueThisMonth||0).toLocaleString('vi-VN') : '0' %>đ</div>
+    <div style="color:#666;margin-top:4px;">Doanh thu tháng này</div>
+  </div>
+</div>
+
+<div style="display:flex;gap:16px;flex-wrap:wrap;">
+  <div class="card" style="flex:1;min-width:200px;text-align:center;padding:20px;">
+    <div style="font-size:36px;margin-bottom:8px;">📦</div>
+    <a href="/staff/orders?status=pending" class="btn btn-warning" style="display:block;margin-bottom:8px;">Đơn hàng chờ xử lý</a>
+    <a href="/staff/orders" style="font-size:13px;color:#666;">Xem tất cả đơn hàng</a>
+  </div>
+  <div class="card" style="flex:1;min-width:200px;text-align:center;padding:20px;">
+    <div style="font-size:36px;margin-bottom:8px;">📊</div>
+    <a href="/staff/statistics" class="btn btn-info" style="display:block;margin-bottom:8px;">Thống kê</a>
+    <span style="font-size:13px;color:#666;">Báo cáo doanh thu</span>
+  </div>
+</div>
+<%- include('../layouts/staff_bottom') %>

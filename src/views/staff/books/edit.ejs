@@ -1,0 +1,56 @@
+<%- include('../../layouts/staff_top', {title: title}) %>
+<div class="page-header">
+  <h3>Sửa thông tin sách</h3>
+  <a href="/staff/books" class="btn btn-secondary">&larr; Quay lại</a>
+</div>
+
+<div class="card" style="max-width:700px;">
+  <% if (typeof book !== 'undefined' && book) { %>
+  <form method="POST" action="/staff/books/edit/<%= book.id %>">
+    <div class="form-group">
+      <label>Tên sách *</label>
+      <input type="text" name="title" value="<%= book.title %>" required />
+    </div>
+    <div class="form-group">
+      <label>Tác giả</label>
+      <input type="text" name="author" value="<%= book.author || '' %>" />
+    </div>
+    <div class="form-group">
+      <label>Thể loại</label>
+      <select name="category_id">
+        <option value="">-- Chọn thể loại --</option>
+        <% if (typeof categories !== 'undefined' && categories) { %>
+          <% categories.forEach(function(c){ %>
+            <option value="<%= c.id %>" <%= String(book.category_id) === String(c.id) ? 'selected' : '' %>><%= c.name %></option>
+          <% }); %>
+        <% } %>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Tên file ảnh bìa</label>
+      <input type="text" name="thumbnail" value="<%= book.thumbnail || '' %>" />
+      <% if (book.thumbnail) { %>
+        <img src="/images/<%= book.thumbnail %>" style="width:80px;height:90px;object-fit:cover;margin-top:8px;border-radius:3px;" onerror="this.style.display='none'" />
+      <% } %>
+    </div>
+    <div class="form-group">
+      <label>Mô tả</label>
+      <textarea name="description" rows="4"><%= book.description || '' %></textarea>
+    </div>
+
+    <%# Thông tin chỉ đọc — staff không thể sửa %>
+    <div style="background:#f8f9fa;border-radius:6px;padding:12px;margin-top:12px;font-size:13px;color:#666;">
+      <strong>Thông tin chỉ Admin mới có thể thay đổi:</strong><br>
+      Tồn kho: <strong><%= book.quantity || 0 %></strong> &nbsp;|&nbsp;
+      Trạng thái: <strong><%= book.is_active ? 'Đang bán' : 'Ẩn' %></strong>
+      <br><small>Tồn kho thay đổi qua phiếu nhập. Trạng thái hiển thị do Admin quản lý.</small>
+    </div>
+
+    <div style="margin-top:15px;">
+      <button type="submit" class="btn btn-success" style="padding:8px 20px;">Cập nhật</button>
+      <a href="/staff/books" class="btn btn-secondary" style="padding:8px 20px;margin-left:8px;">Hủy</a>
+    </div>
+  </form>
+  <% } %>
+</div>
+<%- include('../../layouts/staff_bottom') %>

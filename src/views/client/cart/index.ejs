@@ -1,0 +1,79 @@
+<%- include('../../layouts/main_top', {title: title}) %>
+
+<div style="max-width:900px;margin:30px auto;padding:0 20px;">
+  <h1 style="color:#417505;border-bottom:2px solid #417505;padding-bottom:10px;">Giỏ hàng của bạn</h1>
+
+  <%- include('../../partials/flash-message') %>
+
+  <% if (typeof items !== 'undefined' && items && items.length) { %>
+    <table style="width:100%;border-collapse:collapse;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08);border-radius:8px;overflow:hidden;">
+      <thead>
+        <tr style="background:#417505;color:#fff;">
+          <th style="padding:12px 15px;text-align:left;">Sách</th>
+          <th style="padding:12px 15px;text-align:center;">Giá</th>
+          <th style="padding:12px 15px;text-align:center;">Số lượng</th>
+          <th style="padding:12px 15px;text-align:center;">Thành tiền</th>
+          <th style="padding:12px 15px;text-align:center;">Xóa</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% items.forEach(function(item){ %>
+          <tr style="border-bottom:1px solid #eee;">
+            <td style="padding:12px 15px;">
+              <div style="display:flex;align-items:center;gap:10px;">
+                <img src="/images/<%= item.thumbnail || 'default-book.jpg' %>" alt="" style="width:50px;height:60px;object-fit:cover;border-radius:3px;" onerror="this.src='/images/default-book.jpg'" />
+                <span style="font-weight:bold;color:#333;"><%= item.title %></span>
+              </div>
+            </td>
+            <td style="padding:12px 15px;text-align:center;color:red;font-weight:bold;">
+              <%= Number(item.unit_price).toLocaleString('vi-VN') %>đ
+            </td>
+            <td style="padding:12px 15px;text-align:center;">
+              <form method="POST" action="/cart/update" style="display:inline">
+                <input type="hidden" name="lot_id" value="<%= item.lot_id %>" />
+                <input type="number" name="quantity" value="<%= item.quantity %>" min="1" style="width:60px;padding:5px;border:1px solid #ccc;border-radius:3px;text-align:center;"
+                       onchange="this.form.submit()" />
+              </form>
+            </td>
+            <td style="padding:12px 15px;text-align:center;font-weight:bold;">
+              <%= (Number(item.unit_price) * Number(item.quantity)).toLocaleString('vi-VN') %>đ
+            </td>
+            <td style="padding:12px 15px;text-align:center;">
+              <form method="POST" action="/cart/remove">
+                <input type="hidden" name="lot_id" value="<%= item.lot_id %>" />
+                <button type="submit" style="background:#dc3545;color:#fff;border:none;padding:5px 12px;border-radius:3px;cursor:pointer;">Xóa</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+      <tfoot>
+        <tr style="background:#f8f9fa;">
+          <td colspan="3" style="padding:15px;font-weight:bold;text-align:right;font-size:16px;">Tổng cộng:</td>
+          <td style="padding:15px;text-align:center;font-weight:bold;color:red;font-size:18px;">
+            <%= typeof total !== 'undefined' ? Number(total).toLocaleString('vi-VN') : 0 %>đ
+          </td>
+          <td></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div style="margin-top:20px;display:flex;justify-content:space-between;">
+      <form method="POST" action="/cart/clear">
+        <button type="submit" style="padding:10px 20px;background:#6c757d;color:#fff;border:none;border-radius:4px;cursor:pointer;">Xóa giỏ hàng</button>
+      </form>
+      <a href="/checkout" style="padding:10px 25px;background:#417505;color:#fff;text-decoration:none;border-radius:4px;font-weight:bold;font-size:15px;">
+        Tiến hành thanh toán &rarr;
+      </a>
+    </div>
+  <% } else { %>
+    <div style="text-align:center;padding:60px;">
+      <p style="font-size:18px;color:#666;">Giỏ hàng của bạn đang trống.</p>
+      <a href="/books" style="display:inline-block;margin-top:20px;padding:12px 25px;background:#417505;color:#fff;text-decoration:none;border-radius:4px;">
+        Tiếp tục mua sắm
+      </a>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../../layouts/main_bottom') %>

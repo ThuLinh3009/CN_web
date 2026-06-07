@@ -1,0 +1,28 @@
+<%- include('../layouts/main_top', {title: title}) %>
+
+<div style="max-width:900px;margin:40px auto;padding:0 20px;">
+  <h1 style="color:#417505;border-bottom:2px solid #417505;padding-bottom:10px;">TIN TỨC</h1>
+
+  <% if (typeof newsList !== 'undefined' && newsList && newsList.length) { %>
+    <div style="display:flex;flex-wrap:wrap;gap:25px;margin-top:20px;">
+      <% newsList.forEach(function(n){ %>
+        <div style="flex:0 0 calc(33.333% - 20px);min-width:260px;background:#fff;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08);overflow:hidden;">
+          <% if (n.image) { %>
+            <img src="/images/<%= n.image %>" alt="<%= n.title %>" style="width:100%;height:160px;object-fit:cover;" onerror="this.style.display='none'" />
+          <% } %>
+          <div style="padding:15px;">
+            <h3 style="margin:0 0 8px;font-size:15px;color:#333;"><%= n.title %></h3>
+            <p style="color:#666;font-size:13px;margin:0 0 8px;"><%= n.summary || '' %></p>
+            <p style="color:#999;font-size:12px;"><%= new Date(n.created_at).toLocaleDateString('vi-VN') %> - <%= n.author || '' %></p>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  <% } else { %>
+    <div style="text-align:center;padding:60px;">
+      <p style="color:#666;">Chưa có tin tức nào.</p>
+    </div>
+  <% } %>
+</div>
+
+<%- include('../layouts/main_bottom') %>

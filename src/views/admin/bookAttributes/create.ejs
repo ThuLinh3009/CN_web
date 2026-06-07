@@ -1,0 +1,13 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header"><h3>Thêm thuộc tính sách</h3><a href="/admin/book-attributes" class="btn btn-secondary">&larr; Quay lại</a></div>
+<div class="card" style="max-width:500px;">
+  <form method="POST" action="/admin/book-attributes/create">
+    <div class="form-group"><label>Tên thuộc tính *</label><input type="text" name="name" required /></div>
+    <div class="form-group"><label>Mô tả</label><textarea name="description" rows="3"></textarea></div>
+    <div style="margin-top:12px;">
+      <button type="submit" class="btn btn-success" style="padding:8px 20px;">Lưu</button>
+      <a href="/admin/book-attributes" class="btn btn-secondary" style="padding:8px 20px;margin-left:8px;">Hủy</a>
+    </div>
+  </form>
+</div>
+<%- include('../../layouts/admin_bottom') %>

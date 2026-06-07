@@ -1,0 +1,316 @@
+<style>
+  /* ===== CHAT BUTTON ===== */
+  #chat-fab {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #417505;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: transform .2s, background .2s;
+  }
+  #chat-fab:hover { background: #2d5204; transform: scale(1.08); }
+  #chat-fab svg { width: 26px; height: 26px; fill: #fff; }
+
+  /* Badge số tin nhắn chưa đọc */
+  #chat-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background: #e74c3c;
+    color: #fff;
+    font-size: 11px;
+    font-weight: bold;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+
+  /* ===== CHAT BOX ===== */
+  #chat-box {
+    position: fixed;
+    bottom: 96px;
+    right: 28px;
+    width: 340px;
+    max-height: 480px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 32px rgba(0,0,0,.18);
+    display: none;
+    flex-direction: column;
+    z-index: 9998;
+    overflow: hidden;
+    animation: chatSlideIn .25s ease;
+  }
+  #chat-box.open { display: flex; }
+
+  @keyframes chatSlideIn {
+    from { opacity: 0; transform: translateY(16px) scale(.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  /* Header */
+  #chat-header {
+    background: #417505;
+    color: #fff;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #chat-header .avatar {
+    width: 36px; height: 36px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  #chat-header .info .name { font-weight: bold; font-size: 14px; }
+  #chat-header .info .status { font-size: 11px; opacity: .85; }
+  #chat-close {
+    margin-left: auto;
+    background: none; border: none; color: #fff;
+    font-size: 20px; cursor: pointer; line-height: 1; padding: 0 4px;
+  }
+
+  /* Messages area */
+  #chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 14px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #f7f8fa;
+  }
+  .chat-msg {
+    max-width: 80%;
+    padding: 8px 12px;
+    border-radius: 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+  .chat-msg.bot {
+    background: #fff;
+    color: #333;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+    align-self: flex-start;
+  }
+  .chat-msg.user {
+    background: #417505;
+    color: #fff;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+  }
+  .chat-msg.typing {
+    background: #fff;
+    color: #999;
+    font-style: italic;
+    align-self: flex-start;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+
+  /* Gợi ý nhanh */
+  #chat-suggestions {
+    padding: 6px 10px;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    background: #f7f8fa;
+    border-top: 1px solid #eee;
+  }
+  .chat-suggest-btn {
+    background: #e8f5e9;
+    color: #2d5204;
+    border: 1px solid #c8e6c9;
+    border-radius: 14px;
+    padding: 4px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .chat-suggest-btn:hover { background: #c8e6c9; }
+
+  /* Input area */
+  #chat-input-area {
+    display: flex;
+    gap: 8px;
+    padding: 10px 12px;
+    border-top: 1px solid #eee;
+    background: #fff;
+  }
+  #chat-input {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 13px;
+    outline: none;
+    resize: none;
+    line-height: 1.4;
+  }
+  #chat-input:focus { border-color: #417505; }
+  #chat-send {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #417505;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background .15s;
+  }
+  #chat-send:hover { background: #2d5204; }
+  #chat-send svg { width: 16px; height: 16px; fill: #fff; }
+</style>
+
+<!-- FAB Button -->
+<button id="chat-fab" onclick="toggleChat()" title="Tư vấn sách">
+  <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+  <span id="chat-badge"></span>
+</button>
+
+<!-- Chat Box -->
+<div id="chat-box">
+  <div id="chat-header">
+    <div class="avatar">📚</div>
+    <div class="info">
+      <div class="name">TBook Assistant</div>
+      <div class="status">● Sẵn sàng tư vấn</div>
+    </div>
+    <button id="chat-close" onclick="toggleChat()">×</button>
+  </div>
+
+  <div id="chat-messages">
+    <!-- Tin nhắn chào mừng -->
+    <div class="chat-msg bot">
+      Xin chào! 👋 Tôi là trợ lý tư vấn sách của <strong>TBook</strong>.<br>
+      Tôi có thể giúp bạn tìm sách, kiểm tra tồn kho, hoặc giải đáp thắc mắc.
+    </div>
+  </div>
+
+  <!-- Gợi ý nhanh -->
+  <div id="chat-suggestions">
+    <button class="chat-suggest-btn" onclick="sendSuggest('Tìm sách lập trình')">💻 Sách lập trình</button>
+    <button class="chat-suggest-btn" onclick="sendSuggest('Sách bán chạy nhất')">🔥 Bán chạy</button>
+    <button class="chat-suggest-btn" onclick="sendSuggest('Sách còn hàng không?')">📦 Còn hàng</button>
+  </div>
+
+  <div id="chat-input-area">
+    <textarea id="chat-input" rows="1" placeholder="Nhập câu hỏi..." onkeydown="handleKey(event)"></textarea>
+    <button id="chat-send" onclick="sendMessage()">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+</div>
+
+<script>
+var chatOpen = false;
+var isTyping = false;
+
+function toggleChat() {
+  chatOpen = !chatOpen;
+  var box = document.getElementById('chat-box');
+  var badge = document.getElementById('chat-badge');
+  if (chatOpen) {
+    box.classList.add('open');
+    badge.style.display = 'none';
+    document.getElementById('chat-input').focus();
+    scrollToBottom();
+  } else {
+    box.classList.remove('open');
+  }
+}
+
+function scrollToBottom() {
+  var msgs = document.getElementById('chat-messages');
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function markdownToHtml(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/\n/g, '<br>');
+}
+
+function appendMsg(text, role) {
+  var msgs = document.getElementById('chat-messages');
+  var div = document.createElement('div');
+  div.className = 'chat-msg ' + role;
+  div.innerHTML = role === 'bot' ? markdownToHtml(text) : text;
+  msgs.appendChild(div);
+  scrollToBottom();
+  return div;
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+}
+
+function sendSuggest(text) {
+  document.getElementById('chat-input').value = text;
+  sendMessage();
+}
+
+async function sendMessage() {
+  if (isTyping) return;
+  var input = document.getElementById('chat-input');
+  var text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  appendMsg(text, 'user');
+
+  // Ẩn suggestions sau lần gửi đầu
+  document.getElementById('chat-suggestions').style.display = 'none';
+
+  isTyping = true;
+  var typingDiv = appendMsg('Đang trả lời...', 'typing');
+
+  try {
+    var res = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+    var data = await res.json();
+    typingDiv.remove();
+
+    if (data.reply) {
+      appendMsg(data.reply, 'bot');
+    } else {
+      appendMsg('Xin lỗi, tôi chưa thể trả lời câu này. Bạn thử hỏi cách khác nhé!', 'bot');
+    }
+  } catch (err) {
+    typingDiv.remove();
+    appendMsg('Có lỗi kết nối. Vui lòng thử lại sau.', 'bot');
+  }
+
+  isTyping = false;
+
+  // Hiện badge nếu chat đang đóng
+  if (!chatOpen) {
+    var badge = document.getElementById('chat-badge');
+    badge.style.display = 'flex';
+  }
+}
+</script>

@@ -1,0 +1,55 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+
+<div class="page-header">
+  <h3>Danh sách sách</h3>
+  <a href="/admin/books/create" class="btn btn-success">+ Thêm sách mới</a>
+</div>
+
+<div class="card" style="overflow-x:auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Ảnh</th>
+        <th>Tên sách</th>
+        <th>Tác giả</th>
+        <th>Thể loại</th>
+        <th>SL</th>
+        <th>Trạng thái</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (typeof books !== 'undefined' && books && books.length) { %>
+        <% books.forEach(function(book){ %>
+          <tr>
+            <td><%= book.id %></td>
+            <td><img src="/images/<%= book.thumbnail || 'default-book.jpg' %>" onerror="this.src='/images/default-book.jpg'" /></td>
+            <td><strong><%= book.title %></strong></td>
+            <td><%= book.author %></td>
+            <td><%= book.category_name || 'N/A' %></td>
+            <td><%= book.quantity %></td>
+            <td>
+              <span class="badge <%= book.is_active ? 'badge-success' : 'badge-danger' %>">
+                <%= book.is_active ? 'Đang bán' : 'Ẩn' %>
+              </span>
+            </td>
+            <td>
+              <a href="/admin/books/edit/<%= book.id %>" class="btn btn-warning">Sửa</a>
+              <form method="POST" action="/admin/books/toggle-status/<%= book.id %>" style="display:inline">
+                <button type="submit" class="btn btn-info"><%= book.is_active ? 'Ẩn' : 'Hiện' %></button>
+              </form>
+              <form method="POST" action="/admin/books/delete/<%= book.id %>" style="display:inline" onsubmit="return confirm('Xác nhận xóa?')">
+                <button type="submit" class="btn btn-danger">Xóa</button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      <% } else { %>
+        <tr><td colspan="8" style="text-align:center;padding:20px;color:#666;">Không có sách nào</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../../layouts/admin_bottom') %>

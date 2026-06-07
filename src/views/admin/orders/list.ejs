@@ -1,0 +1,73 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header"><h3>Quản lý đơn hàng online</h3></div>
+
+<%# Bộ lọc trạng thái %>
+<div class="card" style="margin-bottom:16px;padding:12px;">
+  <form method="GET" action="/admin/orders" style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+    <label style="font-weight:bold;">Lọc trạng thái:</label>
+    <select name="status" class="form-control" style="width:auto;" onchange="this.form.submit()">
+      <option value="">Tất cả</option>
+      <% statuses.forEach(function(s){ %>
+        <option value="<%= s %>" <%= currentStatus===s?'selected':'' %>><%= STATUS_LABEL[s]||s %></option>
+      <% }); %>
+    </select>
+    <span style="color:#666;font-size:13px;">Tổng: <strong><%= total %></strong> đơn</span>
+  </form>
+</div>
+
+<div class="card" style="overflow-x:auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>Mã đơn</th>
+        <th>Khách hàng</th>
+        <th>SĐT</th>
+        <th>Tổng tiền</th>
+        <th>Trạng thái</th>
+        <th>Thanh toán</th>
+        <th>Ngày đặt</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (orders && orders.length) { %>
+        <% orders.forEach(function(o) {
+          var d = o.created_at ? new Date(o.created_at) : null;
+          var dateStr = d ? (('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()) : '';
+          var statusColor = {pending:'badge-warning',confirmed:'badge-info',shipping:'badge-primary',delivered:'badge-success',cancelled:'badge-danger'}[o.status]||'badge-secondary';
+        %>
+          <tr>
+            <td><strong><%= o.code||('#'+o.id) %></strong></td>
+            <td><%= o.customer_name||'Khách vãng lai' %><% if(o.customer_email){%><br><small style="color:#999;"><%= o.customer_email %></small><%}%></td>
+            <td><%= o.recipient_phone||'' %></td>
+            <td style="text-align:right;white-space:nowrap;"><%= Number(o.total_amount||0).toLocaleString('vi-VN') %>đ</td>
+            <td><span class="badge <%= statusColor %>"><%= STATUS_LABEL[o.status]||o.status %></span></td>
+            <td>
+              <% if(o.payment_status==='paid'){ %>
+                <span class="badge badge-success">Đã TT</span>
+              <% } else { %>
+                <span class="badge badge-warning">Chưa TT</span>
+              <% } %>
+            </td>
+            <td style="white-space:nowrap;"><%= dateStr %></td>
+            <td><a href="/admin/orders/<%= o.id %>" class="btn btn-info btn-sm">Chi tiết</a></td>
+          </tr>
+        <% }); %>
+      <% } else { %>
+        <tr><td colspan="8" style="text-align:center;padding:20px;">Không có đơn hàng nào</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%# Phân trang %>
+<% if (totalPages > 1) { %>
+<div style="display:flex;gap:8px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+  <% for(var p=1; p<=totalPages; p++) { %>
+    <a href="/admin/orders?status=<%= currentStatus %>&page=<%= p %>"
+       class="btn <%= p===page?'btn-primary':'btn-secondary' %> btn-sm"><%= p %></a>
+  <% } %>
+</div>
+<% } %>
+
+<%- include('../../layouts/admin_bottom') %>

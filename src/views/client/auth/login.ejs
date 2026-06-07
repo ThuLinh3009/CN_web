@@ -1,0 +1,27 @@
+<%- include('../../layouts/main_top', {title: title}) %>
+<div style="max-width:420px;margin:60px auto;background:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.1);">
+  <h2 style="text-align:center;color:#417505;margin-bottom:20px;">ĐĂNG NHẬP</h2>
+
+  <%- include('../../partials/flash-message') %>
+
+  <form method="POST" action="/login">
+    <div style="margin-bottom:15px;">
+      <label style="display:block;font-weight:bold;margin-bottom:5px;">Tên đăng nhập</label>
+      <input type="text" name="username" placeholder="Nhập tên đăng nhập..." required
+             style="width:100%;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;" />
+    </div>
+    <div style="margin-bottom:15px;">
+      <label style="display:block;font-weight:bold;margin-bottom:5px;">Mật khẩu</label>
+      <input type="password" name="password" placeholder="Nhập mật khẩu..." required
+             style="width:100%;padding:10px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;" />
+    </div>
+    <button type="submit"
+            style="width:100%;padding:12px;background:#417505;color:#fff;border:none;border-radius:4px;font-size:16px;cursor:pointer;font-weight:bold;">
+      ĐĂNG NHẬP
+    </button>
+  </form>
+  <p style="text-align:center;margin-top:15px;font-size:14px;">
+    Chưa có tài khoản? <a href="/register" style="color:#417505;font-weight:bold;">Đăng ký ngay</a>
+  </p>
+</div>
+<%- include('../../layouts/main_bottom') %>

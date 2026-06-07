@@ -1,0 +1,52 @@
+<%- include('../../layouts/main_top', {title: title}) %>
+
+<div id="product-section">
+  <div class="sidebar">
+    <h4>DANH MỤC</h4>
+    <ul>
+      <li><a href="/books" class="<%= !category_id ? 'active' : '' %>">Tất cả</a></li>
+      <% if (typeof categories !== 'undefined' && categories) { %>
+        <% categories.forEach(function(cat){ %>
+          <li><a href="/books?category_id=<%= cat.id %>" class="<%= String(category_id) === String(cat.id) ? 'active' : '' %>"><%= cat.name %></a></li>
+        <% }); %>
+      <% } %>
+    </ul>
+  </div>
+
+  <div id="container">
+    <div style="margin-bottom:20px;">
+      <form action="/books" method="GET" style="display:flex;gap:10px;">
+        <input type="text" name="keyword" value="<%= typeof keyword !== 'undefined' ? keyword : '' %>" placeholder="Tìm kiếm sách..." style="flex:1;padding:8px;border:1px solid #ccc;border-radius:4px;" />
+        <button type="submit" style="padding:8px 20px;background:#417505;color:#fff;border:none;border-radius:4px;cursor:pointer;">Tìm</button>
+      </form>
+    </div>
+
+    <% if (typeof keyword !== 'undefined' && keyword) { %>
+      <p style="color:#666;margin-bottom:15px;">Kết quả tìm kiếm cho: <strong>"<%= keyword %>"</strong> - Tìm thấy <%= books && books.length ? books.length : 0 %> sách</p>
+    <% } %>
+
+    <div class="list-product" style="display:flex;flex-wrap:wrap;gap:20px;">
+      <% if (typeof books !== 'undefined' && books && books.length) { %>
+        <% books.forEach(function(book){ %>
+          <div class="item">
+            <div class="product">
+              <img class="photo" src="/images/<%= book.thumbnail || 'default-book.jpg' %>" alt="<%= book.title %>" onerror="this.src='/images/default-book.jpg'" />
+              <a class="name" href="/books/<%= book.id %>"><%= book.title %></a>
+              <p style="font-size:12px;color:#666;margin:4px 0 0;">Tác giả: <%= book.author || 'N/A' %></p>
+              <div class="action-icons">
+                <button onclick="location.href='/books/<%= book.id %>'"><img src="/images/eye.png" alt="View" width="20" /></button>
+              </div>
+              <div class="price-box">
+                <span class="price"><%= book.price ? Number(book.price).toLocaleString('vi-VN') + 'đ' : 'Liên hệ' %></span>
+              </div>
+            </div>
+          </div>
+        <% }); %>
+      <% } else { %>
+        <p style="padding:20px;">Không tìm thấy sách nào.</p>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<%- include('../../layouts/main_bottom') %>

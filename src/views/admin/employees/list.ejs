@@ -1,0 +1,26 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header"><h3>Quản lý nhân viên</h3><a href="/admin/employees/create" class="btn btn-success">+ Thêm NV</a></div>
+<div class="card" style="overflow-x:auto;">
+  <table>
+    <thead><tr><th>ID</th><th>Họ tên</th><th>Username</th><th>SĐT</th><th>Email</th><th>Vai trò</th><th>Thao tác</th></tr></thead>
+    <tbody>
+      <% if (typeof employees !== 'undefined' && employees && employees.length) { %>
+        <% employees.forEach(function(e){ %>
+          <tr>
+            <td><%= e.id %></td>
+            <td><strong><%= e.full_name %></strong></td>
+            <td><%= e.username %></td>
+            <td><%= e.phone||'' %></td>
+            <td><%= e.email||'' %></td>
+            <td><span class="badge badge-<%= e.role_name==='admin'?'danger':'warning' %>"><%= e.role_name||'' %></span></td>
+            <td>
+              <a href="/admin/employees/edit/<%= e.id %>" class="btn btn-warning">Sửa</a>
+              <form method="POST" action="/admin/employees/delete/<%= e.id %>" style="display:inline" onsubmit="return confirm('Xác nhận xóa nhân viên này?')"><button type="submit" class="btn btn-danger">Xóa</button></form>
+            </td>
+          </tr>
+        <% }); %>
+      <% } else { %><tr><td colspan="7" style="text-align:center;padding:20px;">Chưa có nhân viên</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../layouts/admin_bottom') %>

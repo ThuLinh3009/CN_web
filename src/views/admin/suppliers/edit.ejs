@@ -1,0 +1,17 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header"><h3>Sửa nhà cung cấp</h3><a href="/admin/suppliers" class="btn btn-secondary">&larr; Quay lại</a></div>
+<div class="card" style="max-width:500px;">
+  <% if (typeof supplier !== 'undefined' && supplier) { %>
+  <form method="POST" action="/admin/suppliers/edit/<%= supplier.id %>">
+    <div class="form-group"><label>Tên NCC *</label><input type="text" name="name" value="<%= supplier.name %>" required /></div>
+    <div class="form-group"><label>Số điện thoại</label><input type="text" name="phone" value="<%= supplier.phone||'' %>" /></div>
+    <div class="form-group"><label>Email</label><input type="email" name="email" value="<%= supplier.email||'' %>" /></div>
+    <div class="form-group"><label>Địa chỉ</label><input type="text" name="address" value="<%= supplier.address||'' %>" /></div>
+    <div style="margin-top:12px;">
+      <button type="submit" class="btn btn-success" style="padding:8px 20px;">Cập nhật</button>
+      <a href="/admin/suppliers" class="btn btn-secondary" style="padding:8px 20px;margin-left:8px;">Hủy</a>
+    </div>
+  </form>
+  <% } %>
+</div>
+<%- include('../../layouts/admin_bottom') %>

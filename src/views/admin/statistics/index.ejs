@@ -1,0 +1,132 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header">
+  <h3>Thống kê & Báo cáo</h3>
+  <form method="GET" action="/admin/statistics" style="display:flex;gap:8px;align-items:center;">
+    <label style="font-weight:bold;margin:0;">Năm:</label>
+    <select name="year" class="form-control" style="width:auto;" onchange="this.form.submit()">
+      <% var currentYear = new Date().getFullYear(); %>
+      <% for(var y = currentYear; y >= currentYear - 4; y--) { %>
+        <option value="<%= y %>" <%= year===y?'selected':'' %>><%= y %></option>
+      <% } %>
+    </select>
+  </form>
+</div>
+
+<%# Cards tổng quan %>
+<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:24px;">
+  <div class="card" style="flex:1;min-width:180px;text-align:center;">
+    <div style="font-size:24px;font-weight:bold;color:#417505;">
+      <%= typeof stats !== 'undefined' && stats ? Number(stats.totalRevenue||0).toLocaleString('vi-VN') : '0' %>đ
+    </div>
+    <div style="color:#666;margin-top:4px;font-size:13px;">Tổng doanh thu (đã giao)</div>
+  </div>
+  <div class="card" style="flex:1;min-width:180px;text-align:center;">
+    <div style="font-size:24px;font-weight:bold;color:#27ae60;">
+      <%= typeof stats !== 'undefined' && stats ? Number(stats.totalCollected||0).toLocaleString('vi-VN') : '0' %>đ
+    </div>
+    <div style="color:#666;margin-top:4px;font-size:13px;">Tiền đã thu về</div>
+  </div>
+  <div class="card" style="flex:1;min-width:180px;text-align:center;">
+    <div style="font-size:24px;font-weight:bold;color:#e67e22;">
+      <%= typeof stats !== 'undefined' && stats ? Number(stats.revenueThisMonth||0).toLocaleString('vi-VN') : '0' %>đ
+    </div>
+    <div style="color:#666;margin-top:4px;font-size:13px;">Doanh thu tháng này</div>
+  </div>
+  <div class="card" style="flex:1;min-width:180px;text-align:center;">
+    <div style="font-size:24px;font-weight:bold;color:#8e44ad;">
+      <%= typeof stats !== 'undefined' && stats ? stats.totalOrders||0 : 0 %>
+    </div>
+    <div style="color:#666;margin-top:4px;font-size:13px;">Tổng đơn đã giao</div>
+  </div>
+  <% if (typeof stats !== 'undefined' && stats && stats.unpaidDelivered > 0) { %>
+  <div class="card" style="flex:1;min-width:180px;text-align:center;border:1px solid #f5c6cb;">
+    <div style="font-size:24px;font-weight:bold;color:#e74c3c;">
+      <%= stats.unpaidDelivered %>
+    </div>
+    <div style="color:#e74c3c;margin-top:4px;font-size:13px;">⚠ Đã giao chưa thu tiền</div>
+  </div>
+  <% } %>
+</div>
+
+<div style="display:flex;gap:16px;flex-wrap:wrap;">
+  <%# Top sách bán chạy %>
+  <div class="card" style="flex:1;min-width:300px;">
+    <h4 style="margin-bottom:12px;">Top 10 sách bán chạy</h4>
+    <table>
+      <thead>
+        <tr><th>#</th><th>Tên sách</th><th style="text-align:center;">Đã bán</th><th style="text-align:right;">Doanh thu</th></tr>
+      </thead>
+      <tbody>
+        <% if (typeof topBooks !== 'undefined' && topBooks && topBooks.length) { %>
+          <% topBooks.forEach(function(b, idx){ %>
+            <tr>
+              <td><%= idx+1 %></td>
+              <td><%= b.title %></td>
+              <td style="text-align:center;"><strong><%= b.sold_qty||0 %></strong></td>
+              <td style="text-align:right;"><%= Number(b.revenue||0).toLocaleString('vi-VN') %>đ</td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="4" style="text-align:center;padding:16px;">Chưa có dữ liệu</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Doanh thu theo tháng %>
+  <div class="card" style="flex:1;min-width:300px;">
+    <h4 style="margin-bottom:12px;">Doanh thu theo tháng (<%= year %>)</h4>
+    <table>
+      <thead>
+        <tr><th>Tháng</th><th style="text-align:right;">Doanh thu</th><th style="text-align:center;">Số đơn</th></tr>
+      </thead>
+      <tbody>
+        <% if (typeof monthlyRevenue !== 'undefined' && monthlyRevenue && monthlyRevenue.length) { %>
+          <% monthlyRevenue.forEach(function(m){ %>
+            <tr>
+              <td>Tháng <%= m.month %></td>
+              <td style="text-align:right;"><%= Number(m.revenue||0).toLocaleString('vi-VN') %>đ</td>
+              <td style="text-align:center;"><%= m.order_count||0 %></td>
+            </tr>
+          <% }); %>
+        <% } else { %>
+          <tr><td colspan="3" style="text-align:center;padding:16px;">Chưa có dữ liệu trong năm <%= year %></td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%# Báo cáo tồn kho %>
+<div class="card" style="margin-top:16px;overflow-x:auto;">
+  <h4 style="margin-bottom:12px;">Báo cáo tồn kho</h4>
+  <table>
+    <thead>
+      <tr><th>Tên sách</th><th>Thể loại</th><th style="text-align:center;">Tồn kho</th><th style="text-align:center;">Trạng thái</th></tr>
+    </thead>
+    <tbody>
+      <% if (typeof inventory !== 'undefined' && inventory && inventory.length) { %>
+        <% inventory.forEach(function(item){ %>
+          <tr>
+            <td><%= item.title %></td>
+            <td><%= item.category_name||'—' %></td>
+            <td style="text-align:center;"><strong><%= item.quantity||0 %></strong></td>
+            <td style="text-align:center;">
+              <% if((item.quantity||0) === 0){ %>
+                <span class="badge badge-danger">Hết hàng</span>
+              <% } else if((item.quantity||0) <= 5){ %>
+                <span class="badge badge-warning">Sắp hết</span>
+              <% } else { %>
+                <span class="badge badge-success">Còn hàng</span>
+              <% } %>
+            </td>
+          </tr>
+        <% }); %>
+      <% } else { %>
+        <tr><td colspan="4" style="text-align:center;padding:16px;">Chưa có dữ liệu</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<%- include('../../layouts/admin_bottom') %>

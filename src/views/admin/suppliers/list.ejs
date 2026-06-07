@@ -1,0 +1,21 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header"><h3>Quản lý nhà cung cấp</h3><a href="/admin/suppliers/create" class="btn btn-success">+ Thêm NCC</a></div>
+<div class="card" style="overflow-x:auto;">
+  <table>
+    <thead><tr><th>ID</th><th>Tên NCC</th><th>SĐT</th><th>Email</th><th>Địa chỉ</th><th>Thao tác</th></tr></thead>
+    <tbody>
+      <% if (typeof suppliers !== 'undefined' && suppliers && suppliers.length) { %>
+        <% suppliers.forEach(function(s){ %>
+          <tr>
+            <td><%= s.id %></td><td><strong><%= s.name %></strong></td><td><%= s.phone||'' %></td><td><%= s.email||'' %></td><td><%= s.address||'' %></td>
+            <td>
+              <a href="/admin/suppliers/edit/<%= s.id %>" class="btn btn-warning">Sửa</a>
+              <form method="POST" action="/admin/suppliers/delete/<%= s.id %>" style="display:inline" onsubmit="return confirm('Xác nhận?')"><button type="submit" class="btn btn-danger">Xóa</button></form>
+            </td>
+          </tr>
+        <% }); %>
+      <% } else { %><tr><td colspan="6" style="text-align:center;padding:20px;">Chưa có NCC</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../layouts/admin_bottom') %>

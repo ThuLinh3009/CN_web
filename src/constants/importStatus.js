@@ -1,0 +1,1 @@
+module.exports = { DRAFT: 'NHAP_NHAP', CONFIRMED: 'DA_XAC_NHAN', PAID: 'DA_THANH_TOAN' };

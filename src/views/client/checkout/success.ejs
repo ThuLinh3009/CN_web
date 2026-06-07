@@ -1,0 +1,71 @@
+<%- include('../../layouts/main_top', {title: title}) %>
+
+<div style="max-width:600px;margin:60px auto;text-align:center;padding:0 20px;">
+  <div style="background:#fff;padding:40px;border-radius:8px;box-shadow:0 2px 12px rgba(0,0,0,.1);">
+    <div style="font-size:60px;color:#28a745;">&#10003;</div>
+    <h1 style="color:#417505;margin:15px 0 10px;">Đặt hàng thành công!</h1>
+    <p style="color:#666;font-size:16px;">Cảm ơn bạn đã mua sắm tại TBook Store.</p>
+
+    <% if (typeof order !== 'undefined' && order) { %>
+      <div style="background:#f8f9fa;padding:20px;border-radius:6px;margin:20px 0;text-align:left;">
+        <p><strong>Mã đơn hàng:</strong> <%= order.code %></p>
+        <p><strong>Người nhận:</strong> <%= order.recipient_name %></p>
+        <p><strong>Địa chỉ:</strong> <%= order.shipping_address %></p>
+        <p><strong>Tổng tiền:</strong> <span style="color:red;font-weight:bold;"><%= Number(order.total_amount).toLocaleString('vi-VN') %>đ</span></p>
+        <p><strong>Thanh toán:</strong>
+          <% if (order.payment_method === 'QR') { %>
+            <span style="color:#417505;font-weight:bold;">Thanh toán QR Code</span>
+          <% } else { %>
+            Thanh toán khi nhận hàng (COD)
+          <% } %>
+        </p>
+      </div>
+
+      <% if (order.payment_method === 'QR') { %>
+        <div style="border:2px solid #417505;border-radius:10px;padding:24px;margin:20px 0;">
+          <h3 style="color:#417505;margin:0 0 6px;">Quét mã để thanh toán</h3>
+          <p style="color:#666;font-size:13px;margin:0 0 16px;">
+            Chuyển khoản đúng số tiền và nội dung để đơn hàng được xác nhận nhanh nhất
+          </p>
+
+          <%
+            var bank = 'MB';
+            var accountNo = '0912345678';
+            var accountName = 'DOAN THI THU LINH';
+            var amount = Number(order.total_amount);
+            var addInfo = encodeURIComponent('Thanh toan don hang ' + order.code);
+            var qrUrl = 'https://img.vietqr.io/image/' + bank + '-' + accountNo + '-compact2.png'
+                      + '?amount=' + amount
+                      + '&addInfo=' + addInfo
+                      + '&accountName=' + encodeURIComponent(accountName);
+          %>
+          <img src="<%= qrUrl %>" alt="QR Thanh toán"
+               style="width:220px;height:220px;object-fit:contain;border-radius:6px;border:1px solid #eee;" />
+
+          <div style="margin-top:16px;background:#f0f7e6;border-radius:6px;padding:14px;text-align:left;font-size:14px;line-height:1.8;">
+            <p style="margin:0;"><strong>Ngân hàng:</strong> MB Bank</p>
+            <p style="margin:0;"><strong>Số tài khoản:</strong> 0912345678</p>
+            <p style="margin:0;"><strong>Chủ tài khoản:</strong> Đoàn Thị Thu Linh</p>
+            <p style="margin:0;"><strong>Số tiền:</strong> <span style="color:red;font-weight:bold;"><%= Number(order.total_amount).toLocaleString('vi-VN') %>đ</span></p>
+            <p style="margin:0;"><strong>Nội dung CK:</strong> <span style="color:#417505;font-weight:bold;">Thanh toan don hang <%= order.code %></span></p>
+          </div>
+
+          <p style="margin-top:12px;font-size:12px;color:#999;">
+            ⚠️ Vui lòng chuyển khoản trong vòng 24 giờ. Đơn hàng sẽ bị hủy nếu không nhận được thanh toán.
+          </p>
+        </div>
+      <% } %>
+    <% } %>
+
+    <div style="margin-top:25px;display:flex;gap:15px;justify-content:center;flex-wrap:wrap;">
+      <a href="/profile/orders" style="padding:11px 25px;background:#417505;color:#fff;text-decoration:none;border-radius:4px;font-weight:bold;">
+        Xem đơn hàng
+      </a>
+      <a href="/" style="padding:11px 25px;background:#f7941e;color:#fff;text-decoration:none;border-radius:4px;font-weight:bold;">
+        Tiếp tục mua sắm
+      </a>
+    </div>
+  </div>
+</div>
+
+<%- include('../../layouts/main_bottom') %>

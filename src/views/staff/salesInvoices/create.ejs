@@ -1,0 +1,63 @@
+<%- include('../../layouts/staff_top', {title: title}) %>
+<div class="page-header"><h3>Tạo hóa đơn bán hàng</h3><a href="/staff/sales-invoices" class="btn btn-secondary">&larr; Quay lại</a></div>
+<div class="card">
+  <form method="POST" action="/staff/sales-invoices/create" id="invoiceForm">
+    <div style="display:flex;gap:24px;flex-wrap:wrap;">
+      <div class="form-group" style="flex:1;min-width:220px;">
+        <label>Khách hàng</label>
+        <select name="customer_id">
+          <option value="">-- Khách lẻ --</option>
+          <% if (typeof customers !== 'undefined' && customers) { %>
+            <% customers.forEach(function(c){ %>
+              <option value="<%= c.id %>"><%= c.full_name %> (<%= c.phone||'' %>)</option>
+            <% }); %>
+          <% } %>
+        </select>
+      </div>
+      <div class="form-group" style="flex:1;min-width:220px;">
+        <label>Hình thức thanh toán</label>
+        <select name="payment_method">
+          <option value="cash">Tiền mặt</option>
+          <option value="transfer">Chuyển khoản</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Ghi chú</label><textarea name="note" rows="2"></textarea></div>
+    <h4 style="margin:16px 0 8px;">Danh sách sách bán</h4>
+    <div id="items">
+      <div class="sale-item" style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">
+        <select name="lot_id[]" style="flex:2;" required>
+          <option value="">-- Chọn lô sách --</option>
+          <% if (typeof lots !== 'undefined' && lots) { %>
+            <% lots.forEach(function(l){ %>
+              <option value="<%= l.id %>" data-price="<%= l.sale_price||0 %>"><%= l.book_title %> - <%= Number(l.sale_price||0).toLocaleString('vi-VN') %>đ (tồn: <%= l.quantity %>)</option>
+            <% }); %>
+          <% } %>
+        </select>
+        <input type="number" name="quantity[]" min="1" value="1" placeholder="SL" style="flex:1;max-width:80px;" required />
+        <input type="number" name="unit_price[]" min="0" step="1000" placeholder="Đơn giá" style="flex:1;" required />
+        <button type="button" onclick="removeItem(this)" class="btn btn-danger">X</button>
+      </div>
+    </div>
+    <button type="button" onclick="addItem()" class="btn btn-secondary" style="margin-bottom:16px;">+ Thêm sách</button>
+    <div style="margin-top:12px;">
+      <button type="submit" class="btn btn-success" style="padding:8px 20px;">Tạo hóa đơn</button>
+      <a href="/staff/sales-invoices" class="btn btn-secondary" style="padding:8px 20px;margin-left:8px;">Hủy</a>
+    </div>
+  </form>
+</div>
+<script>
+var lotsOptions = `<% if (typeof lots !== 'undefined' && lots) { lots.forEach(function(l){ %><option value="<%= l.id %>" data-price="<%= l.sale_price||0 %>"><%= l.book_title %> - <%= Number(l.sale_price||0).toLocaleString('vi-VN') %>đ</option><% }); } %>`;
+function addItem() {
+  var div = document.createElement('div');
+  div.className = 'sale-item';
+  div.style = 'display:flex;gap:8px;margin-bottom:8px;align-items:center;';
+  div.innerHTML = '<select name="lot_id[]" style="flex:2;" required><option value="">-- Chọn lô sách --</option>' + lotsOptions + '</select><input type="number" name="quantity[]" min="1" value="1" placeholder="SL" style="flex:1;max-width:80px;" required /><input type="number" name="unit_price[]" min="0" step="1000" placeholder="Đơn giá" style="flex:1;" required /><button type="button" onclick="removeItem(this)" class="btn btn-danger">X</button>';
+  document.getElementById('items').appendChild(div);
+}
+function removeItem(btn) {
+  var items = document.querySelectorAll('.sale-item');
+  if (items.length > 1) btn.parentElement.remove();
+}
+</script>
+<%- include('../../layouts/staff_bottom') %>

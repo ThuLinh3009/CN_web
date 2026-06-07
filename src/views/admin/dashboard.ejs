@@ -1,0 +1,52 @@
+<%- include('../layouts/admin_top', {title: title}) %>
+
+<div class="summary-grid">
+  <div class="card">
+    <div class="card-title">Tổng số sách</div>
+    <div class="card-value" style="color:#417505;"><%= summary && summary.totalBooks || 0 %></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Đơn đặt hôm nay</div>
+    <div class="card-value" style="color:#f7941e;"><%= summary && summary.ordersToday || 0 %></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Doanh thu tháng (đ)</div>
+    <div class="card-value" style="color:#dc3545;font-size:18px;"><%= summary ? Number(summary.revenueThisMonth||0).toLocaleString('vi-VN') : 0 %></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Khách hàng mới tháng</div>
+    <div class="card-value" style="color:#17a2b8;"><%= summary && summary.newCustomersThisMonth || 0 %></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Tổng khách hàng</div>
+    <div class="card-value"><%= summary && summary.totalCustomers || 0 %></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Tổng nhân viên</div>
+    <div class="card-value"><%= summary && summary.totalEmployees || 0 %></div>
+  </div>
+  <div class="card">
+    <a href="/admin/orders" style="text-decoration:none;color:inherit;">
+      <div class="card-title">Tổng đơn hàng</div>
+      <div class="card-value"><%= summary && summary.totalOrders || 0 %></div>
+    </a>
+  </div>
+  <div class="card">
+    <a href="/admin/orders?status=pending" style="text-decoration:none;color:inherit;">
+      <div class="card-title">Chờ xác nhận ↗</div>
+      <div class="card-value" style="color:#ffc107;"><%= summary && summary.pendingOrders || 0 %></div>
+    </a>
+  </div>
+</div>
+
+<div class="card" style="max-width:400px;">
+  <h3 style="margin-top:0;">Truy cập nhanh</h3>
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <a href="/admin/books/create" class="btn btn-success">+ Thêm sách mới</a>
+    <a href="/admin/import-receipts/create" class="btn btn-primary">+ Tạo phiếu nhập</a>
+    <a href="/admin/orders?status=pending" class="btn btn-warning">Đơn hàng chờ xử lý</a>
+    <a href="/admin/statistics" class="btn btn-secondary">Xem thống kê</a>
+  </div>
+</div>
+
+<%- include('../layouts/admin_bottom') %>

@@ -1,0 +1,52 @@
+<%- include('../../layouts/staff_top', {title: title}) %>
+<div class="page-header"><h3>Danh sách sách</h3></div>
+
+<div class="card" style="overflow-x:auto;">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Ảnh</th>
+        <th>Tên sách</th>
+        <th>Tác giả</th>
+        <th>Thể loại</th>
+        <th style="text-align:center;">Tồn kho</th>
+        <th style="text-align:center;">Trạng thái</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% if (typeof books !== 'undefined' && books && books.length) { %>
+        <% books.forEach(function(book){ %>
+          <tr>
+            <td><%= book.id %></td>
+            <td><img src="/images/<%= book.thumbnail || 'default-book.jpg' %>" onerror="this.src='/images/default-book.jpg'" /></td>
+            <td><strong><%= book.title %></strong></td>
+            <td><%= book.author || '—' %></td>
+            <td><%= book.category_name || '—' %></td>
+            <td style="text-align:center;">
+              <% if((book.quantity||0) === 0){ %>
+                <span class="badge badge-danger"><%= book.quantity %></span>
+              <% } else if((book.quantity||0) <= 5){ %>
+                <span class="badge badge-warning"><%= book.quantity %></span>
+              <% } else { %>
+                <strong><%= book.quantity %></strong>
+              <% } %>
+            </td>
+            <td style="text-align:center;">
+              <span class="badge <%= book.is_active ? 'badge-success' : 'badge-danger' %>">
+                <%= book.is_active ? 'Đang bán' : 'Ẩn' %>
+              </span>
+            </td>
+            <td>
+              <a href="/staff/books/edit/<%= book.id %>" class="btn btn-warning btn-sm">Sửa</a>
+            </td>
+          </tr>
+        <% }); %>
+      <% } else { %>
+        <tr><td colspan="8" style="text-align:center;padding:20px;color:#666;">Không có sách nào</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../layouts/staff_bottom') %>

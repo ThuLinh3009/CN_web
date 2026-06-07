@@ -1,0 +1,57 @@
+<div id="top">
+  <div id="top-content">
+    <div id="top-left">
+      <span>&#128222; 0399975455</span>
+      <span>&#9993; linhdoanarmy3009@gmail.com</span>
+      <span>&#128205; Dân Tiến, Khoái Châu, Hưng Yên</span>
+    </div>
+    <div id="top-right">
+      <% if (currentUser) { %>
+        Xin chào, <strong><%= currentUser.full_name %></strong>
+        <a href="/profile">Tài khoản</a>
+        <form method="POST" action="/logout" style="display:inline"><button type="submit" style="background:none;border:none;color:white;cursor:pointer;text-decoration:underline;font-size:inherit;">Đăng xuất</button></form>
+      <% } else { %>
+        <a href="/login">Đăng nhập</a> hoặc <a href="/register">Đăng ký</a>
+      <% } %>
+    </div>
+  </div>
+</div>
+
+<div id="banner">
+  <div id="banner-content">
+    <div id="logo">
+      <a href="/"><img src="/images/logo.jpg" alt="TBook Logo" /></a>
+    </div>
+    <form class="search-box" action="/books" method="GET">
+      <input type="text" name="keyword" placeholder="Tìm kiếm sản phẩm..." value="<%= typeof keyword !== 'undefined' ? keyword : '' %>" />
+      <button type="submit">Tìm kiếm</button>
+    </form>
+    <div id="cart">
+      <a href="/cart">
+        <img src="/images/shopping-cart.png" alt="Giỏ hàng" class="cart-icon" />
+        <span id="cart-count">(0)</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<div id="menu">
+  <ul id="menu-content">
+    <li><a href="/">Trang chủ</a></li>
+    <li>
+      <a href="/books">Sản phẩm</a>
+      <ul>
+        <li><a href="/books?sort=newest">Sách mới nổi bật</a></li>
+        <li><a href="/books?sort=sale">Sách khuyến mãi</a></li>
+      </ul>
+    </li>
+    <li><a href="/news">Tin tức</a></li>
+    <li><a href="/contact">Liên hệ</a></li>
+    <% if (currentUser && currentUser.role === 'admin') { %>
+      <li><a href="/admin">Quản trị</a></li>
+    <% } %>
+    <% if (currentUser && currentUser.role === 'staff') { %>
+      <li><a href="/staff">Nhân viên</a></li>
+    <% } %>
+  </ul>
+</div>

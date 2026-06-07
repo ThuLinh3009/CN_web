@@ -1,0 +1,43 @@
+<%- include('../layouts/main_top', {title: title}) %>
+
+<div style="max-width:700px;margin:40px auto;padding:0 20px;">
+  <h1 style="color:#417505;border-bottom:2px solid #417505;padding-bottom:10px;">LIÊN HỆ VỚI CHÚNG TÔI</h1>
+
+  <%- include('../partials/flash-message') %>
+
+  <div style="display:flex;gap:40px;flex-wrap:wrap;margin-top:30px;">
+    <div style="flex:1;min-width:250px;">
+      <h3 style="color:#417505;">Thông tin liên hệ</h3>
+      <p>&#128222; <strong>0399975455</strong></p>
+      <p>&#9993; linhdoanarmy3009@gmail.com</p>
+      <p>&#128205; Dân Tiến, Khoái Châu, Hưng Yên</p>
+      <p>&#9200; Thứ 2 - Thứ 6: 8:00 - 18:00</p>
+    </div>
+    <div style="flex:2;min-width:280px;">
+      <h3 style="color:#417505;">Gửi tin nhắn</h3>
+      <form method="POST" action="/contact">
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-weight:bold;margin-bottom:4px;">Họ và tên *</label>
+          <input type="text" name="full_name" required style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;" />
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-weight:bold;margin-bottom:4px;">Email</label>
+          <input type="email" name="email" style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;" />
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-weight:bold;margin-bottom:4px;">Số điện thoại</label>
+          <input type="text" name="phone" style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;" />
+        </div>
+        <div style="margin-bottom:12px;">
+          <label style="display:block;font-weight:bold;margin-bottom:4px;">Tin nhắn *</label>
+          <textarea name="message" required rows="5" style="width:100%;padding:9px;border:1px solid #ccc;border-radius:4px;box-sizing:border-box;resize:vertical;"></textarea>
+        </div>
+        <button type="submit" style="padding:11px 30px;background:#417505;color:#fff;border:none;border-radius:4px;font-size:15px;cursor:pointer;font-weight:bold;">
+          GỬI TIN NHẮN
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<%- include('../layouts/main_bottom') %>

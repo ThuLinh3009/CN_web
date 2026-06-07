@@ -1,0 +1,79 @@
+<%- include('../../layouts/main_top', {title: title}) %>
+
+<div style="max-width:1100px;margin:30px auto;padding:0 20px;">
+  <% if (typeof book !== 'undefined' && book) { %>
+    <div style="display:flex;gap:40px;flex-wrap:wrap;background:#fff;padding:30px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+      <div style="flex:0 0 280px;">
+        <img src="/images/<%= book.thumbnail || 'default-book.jpg' %>" alt="<%= book.title %>"
+             style="width:100%;max-height:400px;object-fit:cover;border-radius:6px;"
+             onerror="this.src='/images/default-book.jpg'" />
+      </div>
+      <div style="flex:1;min-width:280px;">
+        <h1 style="font-size:24px;color:#333;margin:0 0 10px;"><%= book.title %></h1>
+        <p style="color:#666;margin:5px 0;"><strong>Tác giả:</strong> <%= book.author || 'N/A' %></p>
+        <p style="color:#666;margin:5px 0;"><strong>Thể loại:</strong> <%= book.category_name || 'N/A' %></p>
+        <p style="color:#666;margin:5px 0;"><strong>Tình trạng:</strong>
+          <span style="color:<%= book.quantity > 0 ? '#28a745' : '#dc3545' %>">
+            <%= book.quantity > 0 ? 'Còn hàng (' + book.quantity + ')' : 'Hết hàng' %>
+          </span>
+        </p>
+
+        <% if (book.details && book.details.length) { %>
+          <div style="margin:15px 0;">
+            <% book.details.forEach(function(d){ %>
+              <p style="margin:4px 0;color:#555;font-size:14px;"><strong><%= d.attribute_name %>:</strong> <%= d.value %></p>
+            <% }); %>
+          </div>
+        <% } %>
+
+        <div style="margin:20px 0;">
+          <% if (book.is_active) { %>
+            <form method="POST" action="/cart/add">
+              <input type="hidden" name="lot_id" value="<%= book.lot_id %>" />
+              <input type="number" name="quantity" value="1" min="1" style="width:60px;padding:8px;border:1px solid #ccc;border-radius:4px;margin-right:10px;" />
+              <button type="submit" style="padding:10px 25px;background:#f7941e;color:#fff;border:none;border-radius:4px;font-size:15px;cursor:pointer;font-weight:bold;">
+                Thêm vào giỏ hàng
+              </button>
+            </form>
+          <% } else { %>
+            <button disabled style="padding:10px 25px;background:#ccc;color:#fff;border:none;border-radius:4px;font-size:15px;">
+              Ngừng kinh doanh
+            </button>
+          <% } %>
+        </div>
+
+        <% if (book.description) { %>
+          <div style="margin-top:20px;">
+            <h3 style="color:#417505;">Mô tả sách</h3>
+            <p style="color:#555;line-height:1.7;white-space:pre-line;"><%= book.description %></p>
+          </div>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (typeof related !== 'undefined' && related && related.length) { %>
+      <div style="margin-top:40px;">
+        <h2 style="color:#333;border-bottom:2px solid #417505;padding-bottom:8px;">Sách liên quan</h2>
+        <div class="list-product" style="display:flex;flex-wrap:wrap;gap:20px;margin-top:20px;">
+          <% related.forEach(function(b){ %>
+            <% if (b.id !== book.id) { %>
+              <div class="item">
+                <div class="product">
+                  <img class="photo" src="/images/<%= b.thumbnail || 'default-book.jpg' %>" alt="<%= b.title %>" onerror="this.src='/images/default-book.jpg'" />
+                  <a class="name" href="/books/<%= b.id %>"><%= b.title %></a>
+                  <div class="price-box">
+                    <span class="price"><%= b.price ? Number(b.price).toLocaleString('vi-VN') + 'đ' : 'Liên hệ' %></span>
+                  </div>
+                </div>
+              </div>
+            <% } %>
+          <% }); %>
+        </div>
+      </div>
+    <% } %>
+  <% } else { %>
+    <p>Không tìm thấy sách.</p>
+  <% } %>
+</div>
+
+<%- include('../../layouts/main_bottom') %>

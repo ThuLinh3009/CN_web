@@ -1,0 +1,42 @@
+<%- include('../../layouts/staff_top', {title: title}) %>
+<div class="page-header">
+  <h3>Chi tiết phiếu nhập</h3>
+  <div>
+    <a href="/staff/import-receipts" class="btn btn-secondary">&larr; Quay lại</a>
+    <a href="/staff/import-receipts/<%= receipt && receipt.id %>/print" class="btn btn-info" style="margin-left:8px;">In phiếu</a>
+  </div>
+</div>
+<% if (typeof receipt !== 'undefined' && receipt) { %>
+<div class="card" style="max-width:700px;margin-bottom:16px;">
+  <table>
+    <tr><th style="width:180px;">Mã phiếu</th><td><strong><%= receipt.receipt_code||receipt.id %></strong></td></tr>
+    <tr><th>Nhân viên</th><td><%= receipt.employee_name||'' %></td></tr>
+    <tr><th>Nhà cung cấp</th><td><%= receipt.supplier_name||'' %></td></tr>
+    <tr><th>Trạng thái</th><td><% if(receipt.status==='confirmed'){ %><span class="badge badge-success">Đã xác nhận</span><% } else { %><span class="badge badge-warning">Chờ xác nhận</span><% } %></td></tr>
+    <tr><th>Ghi chú</th><td><%= receipt.note||'' %></td></tr>
+    <tr><th>Ngày tạo</th><td><%= receipt.created_at ? new Date(receipt.created_at).toLocaleString('vi-VN') : '' %></td></tr>
+  </table>
+</div>
+<div class="card" style="overflow-x:auto;">
+  <h4 style="margin-bottom:12px;">Danh sách sách nhập</h4>
+  <table>
+    <thead><tr><th>#</th><th>Tên sách</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
+    <tbody>
+      <% if (typeof items !== 'undefined' && items && items.length) { %>
+        <% var total = 0; %>
+        <% items.forEach(function(item, idx){ total += (item.quantity||0)*(item.unit_price||0); %>
+          <tr>
+            <td><%= idx+1 %></td>
+            <td><%= item.book_title||'' %></td>
+            <td style="text-align:center;"><%= item.quantity %></td>
+            <td style="text-align:right;"><%= Number(item.unit_price||0).toLocaleString('vi-VN') %>đ</td>
+            <td style="text-align:right;"><%= Number((item.quantity||0)*(item.unit_price||0)).toLocaleString('vi-VN') %>đ</td>
+          </tr>
+        <% }); %>
+        <tr style="font-weight:bold;background:#f5f5f5;"><td colspan="4" style="text-align:right;">Tổng cộng:</td><td style="text-align:right;"><%= Number(total).toLocaleString('vi-VN') %>đ</td></tr>
+      <% } else { %><tr><td colspan="5" style="text-align:center;">Chưa có sách</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<% } %>
+<%- include('../../layouts/staff_bottom') %>

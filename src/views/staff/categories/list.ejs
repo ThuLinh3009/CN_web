@@ -1,0 +1,30 @@
+<%- include('../../layouts/staff_top', {title: title}) %>
+<div class="page-header"><h3>Danh mục sách</h3></div>
+
+<div class="card" style="overflow-x:auto;">
+  <table>
+    <thead>
+      <tr><th>ID</th><th>Tên danh mục</th><th>Mô tả</th><th style="text-align:center;">Số sách</th><th style="text-align:center;">Trạng thái</th></tr>
+    </thead>
+    <tbody>
+      <% if (typeof categories !== 'undefined' && categories && categories.length) { %>
+        <% categories.forEach(function(c){ %>
+          <tr>
+            <td><%= c.id %></td>
+            <td><strong><%= c.name %></strong></td>
+            <td><%= c.description || '—' %></td>
+            <td style="text-align:center;"><%= c.book_count || 0 %></td>
+            <td style="text-align:center;">
+              <span class="badge <%= c.is_active ? 'badge-success' : 'badge-danger' %>">
+                <%= c.is_active ? 'Hoạt động' : 'Ẩn' %>
+              </span>
+            </td>
+          </tr>
+        <% }); %>
+      <% } else { %>
+        <tr><td colspan="5" style="text-align:center;padding:20px;">Chưa có danh mục</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../layouts/staff_bottom') %>

@@ -1,0 +1,115 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header">
+  <h3>Chi tiết đơn hàng</h3>
+  <div>
+    <a href="/admin/orders" class="btn btn-secondary">&larr; Quay lại</a>
+    <a href="/admin/orders/print/<%= order && order.id %>" class="btn btn-info" style="margin-left:8px;" target="_blank">🖨 In phiếu</a>
+  </div>
+</div>
+
+<% if (typeof order !== 'undefined' && order) {
+  var statusColor = {pending:'badge-warning',confirmed:'badge-info',shipping:'badge-primary',delivered:'badge-success',cancelled:'badge-danger'}[order.status]||'badge-secondary';
+  var d = order.created_at ? new Date(order.created_at) : null;
+  var dateStr = d ? (('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()+' '+('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2)) : '';
+
+  var nextStatuses = {pending:['confirmed','cancelled'],confirmed:['shipping','cancelled'],shipping:['delivered'],delivered:[],cancelled:[]}[order.status]||[];
+%>
+
+<div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+
+  <%# Thông tin đơn hàng %>
+  <div class="card" style="flex:1;min-width:300px;">
+    <h4 style="margin-bottom:12px;">Thông tin đơn hàng</h4>
+    <table>
+      <tr><th style="width:160px;">Mã đơn</th><td><strong><%= order.code||('#'+order.id) %></strong></td></tr>
+      <tr><th>Người nhận</th><td><%= order.recipient_name||'' %></td></tr>
+      <tr><th>SĐT</th><td><%= order.recipient_phone||'' %></td></tr>
+      <tr><th>Địa chỉ giao</th><td><%= order.shipping_address||'' %></td></tr>
+      <tr><th>Khách hàng</th><td><%= order.customer_name||'Khách vãng lai' %><% if(order.customer_email){%><br><small><%= order.customer_email %></small><%}%></td></tr>
+      <tr><th>Ghi chú</th><td><%= order.note||'—' %></td></tr>
+      <tr><th>Ngày đặt</th><td><%= dateStr %></td></tr>
+    </table>
+  </div>
+
+  <%# Trạng thái & thanh toán %>
+  <div class="card" style="flex:1;min-width:280px;">
+    <h4 style="margin-bottom:12px;">Trạng thái & thanh toán</h4>
+    <table>
+      <tr><th style="width:160px;">Trạng thái</th><td><span class="badge <%= statusColor %>"><%= STATUS_LABEL[order.status]||order.status %></span></td></tr>
+      <tr><th>Thanh toán</th><td><% if(order.payment_status==='paid'){%><span class="badge badge-success">Đã thanh toán</span><%}else{%><span class="badge badge-warning">Chưa thanh toán</span><%}%></td></tr>
+      <tr><th>Phương thức TT</th><td><%= order.payment_method==='QR'?'QR Code (Chuyển khoản)':order.payment_method==='BANK'?'Chuyển khoản ngân hàng':'COD (Tiền mặt)' %></td></tr>
+      <tr><th>Giảm giá</th><td><%= Number(order.discount||0).toLocaleString('vi-VN') %>đ</td></tr>
+      <tr><th>Tổng tiền</th><td><strong style="color:#c0392b;font-size:18px;"><%= Number(order.total_amount||0).toLocaleString('vi-VN') %>đ</strong></td></tr>
+    </table>
+
+    <% if (nextStatuses.length > 0) { %>
+    <div style="margin-top:16px;">
+      <strong>Cập nhật trạng thái:</strong>
+      <form method="POST" action="/admin/orders/<%= order.id %>/status" style="display:inline;margin-left:8px;">
+        <select name="status" class="form-control" style="display:inline;width:auto;">
+          <% nextStatuses.forEach(function(s){ %>
+            <option value="<%= s %>"><%= STATUS_LABEL[s]||s %></option>
+          <% }); %>
+        </select>
+        <button type="submit" class="btn btn-primary" style="margin-left:4px;">Lưu</button>
+      </form>
+    </div>
+    <% } %>
+
+    <% if (order.payment_status !== 'paid' && order.status !== 'pending' && order.status !== 'cancelled') { %>
+    <div style="margin-top:12px;">
+      <form method="POST" action="/admin/orders/<%= order.id %>/mark-paid">
+        <button type="submit" class="btn btn-success"
+                onclick="return confirm('Xác nhận đã nhận thanh toán?')">
+          ✓ Xác nhận đã thanh toán
+        </button>
+      </form>
+    </div>
+    <% } else if (order.payment_status !== 'paid' && order.status === 'pending') { %>
+    <div style="margin-top:12px;">
+      <p style="color:#e67e22;font-size:13px;">⚠ Xác nhận đơn hàng trước khi đánh dấu thanh toán</p>
+    </div>
+    <% } %>
+  </div>
+</div>
+
+<%# Danh sách sách %>
+<div class="card" style="overflow-x:auto;">
+  <h4 style="margin-bottom:12px;">Danh sách sản phẩm</h4>
+  <table>
+    <thead><tr><th>#</th><th>Tên sách</th><th style="text-align:center;">SL</th><th style="text-align:right;">Đơn giá</th><th style="text-align:right;">Thành tiền</th></tr></thead>
+    <tbody>
+      <% if (order.items && order.items.length) {
+        var total = 0;
+        order.items.forEach(function(item, idx) {
+          var sub = (item.quantity||0)*(item.unit_price||0);
+          total += sub;
+      %>
+        <tr>
+          <td><%= idx+1 %></td>
+          <td><%= item.book_title||'' %></td>
+          <td style="text-align:center;"><%= item.quantity %></td>
+          <td style="text-align:right;"><%= Number(item.unit_price||0).toLocaleString('vi-VN') %>đ</td>
+          <td style="text-align:right;"><%= Number(sub).toLocaleString('vi-VN') %>đ</td>
+        </tr>
+      <% }); %>
+        <tr style="font-weight:bold;background:#f5f5f5;">
+          <td colspan="4" style="text-align:right;">Giảm giá:</td>
+          <td style="text-align:right;color:#e74c3c;">- <%= Number(order.discount||0).toLocaleString('vi-VN') %>đ</td>
+        </tr>
+        <tr style="font-weight:bold;background:#f5f5f5;">
+          <td colspan="4" style="text-align:right;">Tổng thanh toán:</td>
+          <td style="text-align:right;color:#c0392b;"><%= Number(order.total_amount||0).toLocaleString('vi-VN') %>đ</td>
+        </tr>
+      <% } else { %>
+        <tr><td colspan="5" style="text-align:center;padding:20px;">Không có sản phẩm</td></tr>
+      <% } %>
+    </tbody>
+  </table>
+</div>
+
+<% } else { %>
+  <div class="card"><p>Không tìm thấy đơn hàng.</p></div>
+<% } %>
+
+<%- include('../../layouts/admin_bottom') %>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Phiếu giao hàng - <%= order ? (order.code||order.id) : '' %></title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: Arial, sans-serif; font-size: 13px; color: #000; background: #fff; }
+    .page { width: 210mm; min-height: 148mm; margin: 0 auto; padding: 16mm 14mm; }
+
+    .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+    .shop-name { font-size: 20px; font-weight: bold; color: #333; }
+    .shop-info { font-size: 11px; color: #555; margin-top: 4px; }
+    .doc-title { text-align: right; }
+    .doc-title h2 { font-size: 16px; font-weight: bold; text-transform: uppercase; }
+    .doc-title .order-code { font-size: 13px; color: #555; margin-top: 4px; }
+
+    .section { margin-bottom: 10px; }
+    .section-title { font-weight: bold; font-size: 12px; border-bottom: 1px solid #ccc; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; color: #555; }
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+    .info-row { display: flex; gap: 4px; font-size: 12px; }
+    .info-label { color: #555; white-space: nowrap; min-width: 100px; }
+    .info-value { font-weight: bold; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 12px; }
+    table th { background: #f0f0f0; padding: 5px 8px; text-align: left; border: 1px solid #ccc; font-size: 11px; }
+    table td { padding: 5px 8px; border: 1px solid #ccc; }
+    table tr:nth-child(even) td { background: #fafafa; }
+    .text-right { text-align: right; }
+    .text-center { text-align: center; }
+
+    .total-row td { font-weight: bold; background: #f0f0f0 !important; font-size: 13px; }
+
+    .footer { margin-top: 14px; display: flex; justify-content: space-between; }
+    .sign-box { text-align: center; width: 30%; }
+    .sign-box .sign-title { font-weight: bold; font-size: 12px; }
+    .sign-box .sign-line { margin-top: 40px; border-top: 1px solid #000; padding-top: 4px; font-size: 11px; color: #555; }
+
+    .print-btn { position: fixed; top: 12px; right: 12px; padding: 8px 18px; background: #007bff; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+    .back-btn  { position: fixed; top: 12px; right: 110px; padding: 8px 18px; background: #6c757d; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; text-decoration: none; }
+
+    @media print {
+      .print-btn, .back-btn { display: none; }
+      body { margin: 0; }
+      .page { padding: 10mm; }
+    }
+  </style>
+</head>
+<body>
+<button class="print-btn" onclick="window.print()">🖨 In phiếu</button>
+<a class="back-btn" onclick="window.history.back()">← Quay lại</a>
+
+<div class="page">
+  <% if (typeof order !== 'undefined' && order) {
+    var d = order.created_at ? new Date(order.created_at) : null;
+    var dateStr = d ? (('0'+d.getDate()).slice(-2)+'/'+('0'+(d.getMonth()+1)).slice(-2)+'/'+d.getFullYear()) : '';
+  %>
+
+  <%# Header %>
+  <div class="header">
+    <div>
+      <div class="shop-name">📚 TBook Store</div>
+      <div class="shop-info">Website: tbook.vn &nbsp;|&nbsp; Email: info@tbook.vn</div>
+    </div>
+    <div class="doc-title">
+      <h2>Phiếu giao hàng</h2>
+      <div class="order-code">Mã đơn: <strong><%= order.code || ('#'+order.id) %></strong></div>
+      <div class="order-code">Ngày đặt: <%= dateStr %></div>
+    </div>
+  </div>
+
+  <%# Thông tin giao hàng %>
+  <div class="section">
+    <div class="section-title">Thông tin giao hàng</div>
+    <div class="info-grid">
+      <div class="info-row"><span class="info-label">Người nhận:</span><span class="info-value"><%= order.recipient_name||'' %></span></div>
+      <div class="info-row"><span class="info-label">Khách hàng:</span><span class="info-value"><%= order.customer_name||'Khách vãng lai' %></span></div>
+      <div class="info-row"><span class="info-label">Số điện thoại:</span><span class="info-value"><%= order.recipient_phone||'' %></span></div>
+      <div class="info-row"><span class="info-label">Phương thức TT:</span><span class="info-value"><%= order.payment_method==='QR'?'QR Code (Chuyển khoản)':order.payment_method==='BANK'?'Chuyển khoản ngân hàng':'COD (Tiền mặt)' %></span></div>
+      <div class="info-row" style="grid-column:1/-1;"><span class="info-label">Địa chỉ giao:</span><span class="info-value"><%= order.shipping_address||'' %></span></div>
+      <% if(order.note){ %><div class="info-row" style="grid-column:1/-1;"><span class="info-label">Ghi chú:</span><span class="info-value"><%= order.note %></span></div><% } %>
+    </div>
+  </div>
+
+  <%# Danh sách sản phẩm %>
+  <div class="section">
+    <div class="section-title">Danh sách sản phẩm</div>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:30px;">#</th>
+          <th>Tên sách</th>
+          <th class="text-center" style="width:60px;">SL</th>
+          <th class="text-right" style="width:90px;">Đơn giá</th>
+          <th class="text-right" style="width:100px;">Thành tiền</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% if (order.items && order.items.length) {
+          var subtotal = 0;
+          order.items.forEach(function(item, idx) {
+            var line = (item.quantity||0) * (item.unit_price||0);
+            subtotal += line;
+        %>
+          <tr>
+            <td class="text-center"><%= idx+1 %></td>
+            <td><%= item.book_title||'' %></td>
+            <td class="text-center"><%= item.quantity %></td>
+            <td class="text-right"><%= Number(item.unit_price||0).toLocaleString('vi-VN') %>đ</td>
+            <td class="text-right"><%= Number(line).toLocaleString('vi-VN') %>đ</td>
+          </tr>
+        <% }); %>
+        <% if ((order.discount||0) > 0) { %>
+          <tr>
+            <td colspan="4" class="text-right" style="color:#555;">Giảm giá:</td>
+            <td class="text-right" style="color:#e74c3c;">- <%= Number(order.discount||0).toLocaleString('vi-VN') %>đ</td>
+          </tr>
+        <% } %>
+          <tr class="total-row">
+            <td colspan="4" class="text-right">TỔNG THANH TOÁN:</td>
+            <td class="text-right" style="color:#c0392b;font-size:14px;"><%= Number(order.total_amount||0).toLocaleString('vi-VN') %>đ</td>
+          </tr>
+        <% } else { %>
+          <tr><td colspan="5" class="text-center" style="padding:12px;">Không có sản phẩm</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+
+  <%# Ký tên %>
+  <div class="footer">
+    <div class="sign-box">
+      <div class="sign-title">Người giao hàng</div>
+      <div class="sign-line">(Ký, ghi rõ họ tên)</div>
+    </div>
+    <div class="sign-box">
+      <div class="sign-title">Người nhận hàng</div>
+      <div class="sign-line">(Ký, ghi rõ họ tên)</div>
+    </div>
+    <div class="sign-box">
+      <div class="sign-title">Xác nhận thanh toán</div>
+      <div class="sign-line">
+        <% if(order.payment_status==='paid'){ %>
+          ✅ Đã thanh toán
+        <% } else { %>
+          Chưa thanh toán
+        <% } %>
+      </div>
+    </div>
+  </div>
+
+  <% } %>
+</div>
+</body>
+</html>

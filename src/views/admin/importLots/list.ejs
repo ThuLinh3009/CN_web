@@ -1,0 +1,26 @@
+<%- include('../../layouts/admin_top', {title: title}) %>
+<div class="page-header"><h3>Quản lý lô hàng nhập</h3><a href="/admin/import-lots/create" class="btn btn-success">+ Tạo lô hàng</a></div>
+<div class="card" style="overflow-x:auto;">
+  <table>
+    <thead><tr><th>ID</th><th>Sách</th><th>Số lượng nhập</th><th>Giá nhập</th><th>Giá bán</th><th>Ngày tạo</th><th>Thao tác</th></tr></thead>
+    <tbody>
+      <% if (typeof lots !== 'undefined' && lots && lots.length) { %>
+        <% lots.forEach(function(l){ %>
+          <tr>
+            <td><%= l.id %></td>
+            <td><strong><%= l.book_title||'' %></strong></td>
+            <td><%= l.quantity %></td>
+            <td><%= l.import_price ? Number(l.import_price).toLocaleString('vi-VN') + 'đ' : '' %></td>
+            <td><%= l.sale_price ? Number(l.sale_price).toLocaleString('vi-VN') + 'đ' : '<em>Chưa có</em>' %></td>
+            <td><%= l.created_at ? new Date(l.created_at).toLocaleDateString('vi-VN') : '' %></td>
+            <td>
+              <a href="/admin/import-lots/<%= l.id %>/edit" class="btn btn-warning">Sửa/Giá</a>
+              <form method="POST" action="/admin/import-lots/<%= l.id %>/delete" style="display:inline" onsubmit="return confirm('Xác nhận xóa lô hàng?')"><button type="submit" class="btn btn-danger">Xóa</button></form>
+            </td>
+          </tr>
+        <% }); %>
+      <% } else { %><tr><td colspan="7" style="text-align:center;padding:20px;">Chưa có lô hàng</td></tr><% } %>
+    </tbody>
+  </table>
+</div>
+<%- include('../../layouts/admin_bottom') %>
