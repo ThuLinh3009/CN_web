@@ -33,9 +33,9 @@
 <table>
   <thead><tr><th>#</th><th>Tên sách</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
   <tbody>
-    <% if (typeof items !== 'undefined' && items && items.length) { %>
+    <% if (receipt.items && receipt.items.length) { %>
       <% var total = 0; %>
-      <% items.forEach(function(item, idx){ total += (item.quantity||0)*(item.unit_price||0); %>
+      <% receipt.items.forEach(function(item, idx){ total += (item.quantity||0)*(item.unit_price||0); %>
         <tr>
           <td><%= idx+1 %></td>
           <td><%= item.book_title||'' %></td>

@@ -3,7 +3,7 @@
   <h3>Chi tiết phiếu nhập</h3>
   <div>
     <a href="/admin/import-receipts" class="btn btn-secondary">&larr; Quay lại</a>
-    <a href="/admin/import-receipts/<%= receipt && receipt.id %>/print" class="btn btn-info" style="margin-left:8px;">In phiếu</a>
+    <a href="/admin/import-receipts/print/<%= receipt && receipt.id %>" class="btn btn-info" style="margin-left:8px;">In phiếu</a>
     <% if (typeof receipt !== 'undefined' && receipt && receipt.status !== 'confirmed') { %>
       <form method="POST" action="/admin/import-receipts/<%= receipt.id %>/confirm" style="display:inline;margin-left:8px;" onsubmit="return confirm('Xác nhận phiếu nhập này?')">
         <button type="submit" class="btn btn-success">Xác nhận nhập</button>
@@ -27,9 +27,9 @@
   <table>
     <thead><tr><th>#</th><th>Tên sách</th><th>Lô hàng</th><th>Số lượng</th><th>Đơn giá</th><th>Thành tiền</th></tr></thead>
     <tbody>
-      <% if (typeof items !== 'undefined' && items && items.length) { %>
+      <% if (receipt.items && receipt.items.length) { %>
         <% var total = 0; %>
-        <% items.forEach(function(item, idx){ total += (item.quantity||0)*(item.unit_price||0); %>
+        <% receipt.items.forEach(function(item, idx){ total += (item.quantity||0)*(item.unit_price||0); %>
           <tr>
             <td><%= idx+1 %></td>
             <td><%= item.book_title||'' %></td>

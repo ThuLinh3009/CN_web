@@ -50,6 +50,14 @@ module.exports = {
     } catch (error) { return next(error); }
   },
 
+  async print(req, res, next) {
+    try {
+      const receipt = await importReceiptService.getImportReceiptById(req.params.id);
+      if (!receipt) return res.redirect('/admin/import-receipts');
+      return res.render('admin/importReceipts/print', { title: 'In phiếu nhập', receipt });
+    } catch (error) { return next(error); }
+  },
+
   async confirm(req, res, next) {
     try {
       const { id } = req.params;
